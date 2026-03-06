@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0f1e">
+<title>TriTrain</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0f1e; --bg2:#111827; --bg3:#1a2235; --border:#1e2d45;
+  --text:#e8edf5; --muted:#6b7fa3;
+  --swim:#0ea5e9; --swim-bg:rgba(14,165,233,.1);
+  --zwift:#22c55e; --zwift-bg:rgba(34,197,94,.1);
+  --run:#f97316; --run-bg:rgba(249,115,22,.1);
+  --brick:#eab308; --brick-bg:rgba(234,179,8,.1);
+  --rest:#64748b; --rest-bg:rgba(100,116,139,.1);
+  --race:#ef4444; --race-bg:rgba(239,68,68,.15);
+  --ph1:#d97706; --ph2:#22c55e; --ph3:#3b82f6; --ph4:#a855f7;
+  --r:12px; --font:'Outfit',sans-serif; --mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100dvh;overflow-x:hidden}
+
+.header{position:sticky;top:0;z-index:100;background:rgba(10,15,30,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.header-logo{font-size:18px;font-weight:800;letter-spacing:-.5px}
+.header-logo span{color:var(--zwift)}
+.header-sub{font-size:11px;color:var(--muted);font-family:var(--mono)}
+
+.cbar{background:linear-gradient(135deg,#0f172a,#1e1040);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;gap:12px;overflow-x:auto;scrollbar-width:none}
+.cbar::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;border-radius:8px;padding:8px 12px;display:flex;flex-direction:column;gap:2px;min-width:120px}
+.chip.m{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3)}
+.chip.l{background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3)}
+.chip.w{background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.2)}
+.chip-lbl{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.chip-val{font-size:22px;font-weight:800;font-family:var(--mono);line-height:1}
+.chip.m .chip-val{color:var(--zwift)}
+.chip.l .chip-val{color:#a855f7}
+.chip.w .chip-val{color:var(--swim)}
+.chip-sub{font-size:11px;color:var(--muted)}
+
+.view{display:none;padding:16px}
+.view.active{display:block}
+
+.sc{border-radius:var(--r);margin-bottom:10px;overflow:hidden;border:1px solid var(--border);transition:transform .15s}
+.sc:active{transform:scale(.98)}
+.sc-hd{display:flex;align-items:center;gap:10px;padding:12px 14px 10px}
+.sbadge{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.smeta{flex:1;min-width:0}
+.ssport{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:2px}
+.stitle{font-size:14px;font-weight:600;line-height:1.3}
+.sright{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.sdur{font-family:var(--mono);font-size:13px;font-weight:500}
+.slvl{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px}
+.dtoggle{display:flex;align-items:center;gap:6px;padding:8px 14px;cursor:pointer;font-size:11px;font-weight:600;color:var(--muted);border-top:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);transition:color .2s}
+.dtoggle:active{color:var(--text)}
+.dbody{display:none}
+.dbody.open{display:block}
+.dtext{font-size:12px;line-height:1.6;color:var(--muted);padding:10px 14px 12px}
+
+.sport-Z .sbadge{background:var(--zwift-bg)} .sport-Z .ssport{color:var(--zwift)} .sport-Z .sdur{color:var(--zwift)} .sport-Z .sc{background:linear-gradient(135deg,var(--bg2) 0%,rgba(34,197,94,.04) 100%)}
+.sport-S .sbadge{background:var(--swim-bg)} .sport-S .ssport{color:var(--swim)} .sport-S .sdur{color:var(--swim)} .sport-S .sc{background:linear-gradient(135deg,var(--bg2) 0%,rgba(14,165,233,.04) 100%)}
+.sport-R .sbadge{background:var(--run-bg)} .sport-R .ssport{color:var(--run)} .sport-R .sdur{color:var(--run)} .sport-R .sc{background:linear-gradient(135deg,var(--bg2) 0%,rgba(249,115,22,.04) 100%)}
+.sport-BZ .sbadge{background:var(--brick-bg)} .sport-BZ .ssport{color:var(--brick)} .sport-BZ .sdur{color:var(--brick)} .sport-BZ .sc{background:linear-gradient(135deg,var(--bg2) 0%,rgba(234,179,8,.04) 100%)}
+.sport-X .sbadge{background:var(--rest-bg)} .sport-X .ssport{color:var(--rest)} .sport-X .sc{background:var(--bg2)}
+.sport-RACE .sbadge{background:var(--race-bg)} .sport-RACE .ssport{color:var(--race)} .sport-RACE .sc{background:linear-gradient(135deg,var(--bg2) 0%,rgba(239,68,68,.08) 100%);border-color:rgba(239,68,68,.4)}
+.lvl-Intense{background:rgba(249,115,22,.2);color:var(--run)} .lvl-Max{background:rgba(239,68,68,.2);color:var(--race)} .lvl-Facile{background:rgba(34,197,94,.2);color:var(--zwift)} .lvl-Mod{background:rgba(107,127,163,.15);color:var(--muted)}
+
+.wknav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.wkbtn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.wkbtn:active{background:var(--bg3)}
+.wkinfo{text-align:center}
+.wknum{font-size:15px;font-weight:700}
+.wkdts{font-size:11px;color:var(--muted);font-family:var(--mono)}
+
+.ppill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;margin-bottom:14px}
+.dlrow{display:flex;align-items:center;gap:8px;padding:6px 0;margin-bottom:4px}
+.dlbl{font-size:11px;font-weight:700;color:var(--muted);font-family:var(--mono);letter-spacing:1px;min-width:32px}
+.tdot{width:6px;height:6px;border-radius:50%;background:var(--zwift);flex-shrink:0}
+
+.ph-block{margin-bottom:24px}
+.ph-hd{padding:10px 14px;border-radius:var(--r) var(--r) 0 0;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between}
+.wrow{background:var(--bg2);border:1px solid var(--border);border-top:none;padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .15s}
+.wrow:last-child{border-radius:0 0 var(--r) var(--r)}
+.wrow:active{background:var(--bg3)}
+.wnum{font-family:var(--mono);font-size:13px;font-weight:600;min-width:28px}
+.wdts{font-size:11px;color:var(--muted);min-width:100px}
+.wspts{display:flex;gap:4px;flex:1;flex-wrap:wrap}
+.sdot{width:8px;height:8px;border-radius:50%}
+.wtot{font-size:11px;color:var(--muted);font-family:var(--mono)}
+
+/* ── GARMIN ── */
+.gcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.gcard h3{font-size:15px;font-weight:700;margin-bottom:6px}
+.gcard p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px}
+.status-bar{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;font-size:12px;font-weight:600;margin-bottom:12px}
+.status-warn{background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);color:var(--brick)}
+.status-ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--zwift)}
+.status-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--race)}
+
+.form-group{margin-bottom:12px}
+.form-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;display:block}
+.form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:11px 13px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:border-color .2s}
+.form-input:focus{border-color:var(--zwift)}
+.form-input::placeholder{color:var(--muted)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:8px;border:none;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:opacity .2s;width:100%}
+.btn:active{opacity:.8}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-green{background:var(--zwift);color:#000}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+
+.url-input-wrap{position:relative}
+.url-hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5}
+
+.step-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.step-item{display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--bg3);border-radius:8px}
+.step-n{width:24px;height:24px;border-radius:50%;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--zwift);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-body{flex:1}
+.step-t{font-size:13px;font-weight:600;margin-bottom:2px}
+.step-d{font-size:12px;color:var(--muted);line-height:1.5}
+.step-code{font-family:var(--mono);font-size:11px;background:rgba(0,0,0,.4);color:var(--zwift);padding:6px 10px;border-radius:6px;margin-top:6px;word-break:break-all;display:block}
+
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.scard{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px}
+.slabel{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.sval{font-size:22px;font-weight:800;font-family:var(--mono)}
+.sunit{font-size:12px;color:var(--muted);margin-left:4px}
+.strend{font-size:11px;margin-top:2px;color:var(--muted)}
+
+.act-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.act-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.act-body{flex:1;min-width:0}
+.act-name{font-size:13px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.act-date{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.act-stats{display:flex;gap:10px;margin-top:4px}
+.act-stat{font-size:11px;color:var(--muted)}
+.act-stat span{color:var(--text);font-weight:600}
+
+.match-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px}
+.match-ok{background:rgba(34,197,94,.15);color:var(--zwift)}
+.match-miss{background:rgba(239,68,68,.1);color:var(--race)}
+
+.section-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;margin-top:4px}
+.page-pb{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+
+.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,15,30,.95);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:100}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;cursor:pointer;border:none;background:none;color:var(--muted);font-family:var(--font);transition:color .2s}
+.bni.active{color:var(--zwift)}
+.bni-icon{font-size:20px;margin-bottom:3px;line-height:1}
+.bni-lbl{font-size:10px;font-weight:600;letter-spacing:.5px}
+
+.loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(34,197,94,.3);border-top-color:var(--zwift);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ai{animation:fadeIn .3s ease both}
+
+.today-dt{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.today-hl{font-size:26px;font-weight:800;margin-bottom:4px}
+.today-wk{font-size:13px;margin-bottom:20px}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .ei{font-size:40px;margin-bottom:12px}
+.empty h3{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px}
+.empty p{font-size:13px;line-height:1.6}
+
+.tab-row{display:flex;gap:8px;margin-bottom:16px}
+.tab-btn{flex:1;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.tab-btn.active{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:var(--zwift)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-logo">TRI<span>TRAIN</span></div>
+    <div class="header-sub">FTP 213W · Semi ~1h35</div>
+  </div>
+  <div id="todayBadge" style="font-size:12px;color:var(--muted);font-family:var(--mono)"></div>
+</div>
+
+<div class="cbar">
+  <div class="chip m"><div class="chip-lbl">Tri M</div><div class="chip-val" id="dM">—</div><div class="chip-sub">15 mai · 1,9-90-21km</div></div>
+  <div class="chip l"><div class="chip-lbl">Tri L</div><div class="chip-val" id="dL">—</div><div class="chip-sub">5 juil · 3,8-180-42km</div></div>
+  <div class="chip w"><div class="chip-lbl">Semaine</div><div class="chip-val" id="cwn">—</div><div class="chip-sub" id="cpn">—</div></div>
+</div>
+
+<div id="view-today" class="view active page-pb"><div id="todayC"></div></div>
+<div id="view-week"  class="view page-pb">
+  <div class="wknav">
+    <button class="wkbtn" onclick="chWk(-1)">‹</button>
+    <div class="wkinfo"><div class="wknum" id="wkN"></div><div class="wkdts" id="wkD"></div></div>
+    <button class="wkbtn" onclick="chWk(+1)">›</button>
+  </div>
+  <div id="weekC"></div>
+</div>
+<div id="view-prog"   class="view page-pb"><div id="progC"></div></div>
+<div id="view-garmin" class="view page-pb"><div id="garminC"></div></div>
+
+<div class="bnav">
+  <button class="bni active" onclick="sv('today',this)"><div class="bni-icon">📅</div><div class="bni-lbl">Aujourd'hui</div></button>
+  <button class="bni" onclick="sv('week',this)"><div class="bni-icon">📆</div><div class="bni-lbl">Semaine</div></button>
+  <button class="bni" onclick="sv('prog',this)"><div class="bni-icon">📋</div><div class="bni-lbl">Programme</div></button>
+  <button class="bni" onclick="sv('garmin',this)"><div class="bni-icon">⌚</div><div class="bni-lbl">Garmin</div></button>
+</div>
+
+<script>
+const PROGRAM = [{"week": 1, "phase": 1, "phaseName": "BASE & Endurance Fondamentale", "phaseColor": "#B7770D", "startDate": "2026-03-02", "days": [{"date": "2026-03-02", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-03-03", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Zwift Z2 – 1h30", "detail": "Tempus Fugit · 128-170W · cadence 85-90rpm | Toutes les 20min : 10 pédalages à une jambe (30s chaque)", "duration": 90, "level": "Mod"}]}, {"date": "2026-03-04", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Technique + 8×100m Z2", "detail": "Drills : 4×50m catch-up, 4×50m fingertip drag, 4×50m fist drill | 8×100m @2:20/100m r15s", "duration": 50, "level": "Mod"}, {"sport": "Z", "title": "Zwift Z2 – 1h", "detail": "Tick Tock · 130-160W · focus position aéro : coudes sur extensions, dos plat toutes les 5min", "duration": 60, "level": "Mod"}]}, {"date": "2026-03-05", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Easy Run Z2 – 45min", "detail": "~5:10/km | Km 1-2 échauffement | Km 3-7 Z2 conversation | Foulée légère, atterrissage sous le centre de gravité", "duration": 45, "level": "Mod"}]}, {"date": "2026-03-06", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "Endurance 2000m continu", "detail": "2000m @2:15/100m sans arrêt | Penser rotation des hanches et expiration complète | Retour 100m dos", "duration": 50, "level": "Mod"}, {"sport": "R", "title": "Easy Run – 30min", "detail": "Z2 ~5:15/km | Cadence cible 170-175 pas/min | Finir par 5min marche + étirements mollets", "duration": 30, "level": "Mod"}]}, {"date": "2026-03-07", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "Sweetspot 2×15min", "detail": "ERG ON | Éch 10min | 2×15min @192W r5min Z1 | Cadence 88-92rpm, rester assis, pression constante | Retour 8min", "duration": 65, "level": "Intense"}]}, {"date": "2026-03-08", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "BZ", "title": "Zwift Z2 2h + Brick Run 15min", "detail": "Tempus Fugit 2h @130-165W | 1 gel toutes les 45min | Transition rapide <90s | Run 15min @5:10/km", "duration": 135, "level": "Mod"}]}]}, {"week": 2, "phase": 1, "phaseName": "BASE & Endurance Fondamentale", "phaseColor": "#B7770D", "startDate": "2026-03-09", "days": [{"date": "2026-03-09", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-03-10", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Zwift Z2 – 1h30 + 3×5min Z3", "detail": "Tempus Fugit | 25min Z2 | 3×(5min @180W + 5min Z2) | 25min Z2 | Pendant Z3 : rester relâché, respiration contrôlée", "duration": 105, "level": "Mod"}]}, {"date": "2026-03-11", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Mixte Z2/Z4 + sprints – 55min", "detail": "Éch 300m | 2×(400m Z2 @2:20 + 200m Z4 @2:08 r15s) | 4×50m sprint départ plongé r30s | Retour 200m", "duration": 55, "level": "Mod"}, {"sport": "Z", "title": "Zwift Z2 – 1h15", "detail": "Tick Tock | 130-165W | Maintenir 90rpm minimum | 5min position aéro toutes les 20min", "duration": 75, "level": "Mod"}]}, {"date": "2026-03-12", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Fartlek 40min", "detail": "Éch 10min Z1 | 6×(3min @4:20/km + 2min Z1 trot) | Retour 5min | Bras actifs, expiration rythmée | ~9km", "duration": 40, "level": "Intense"}]}, {"date": "2026-03-13", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "Seuil 5×300m", "detail": "Éch 400m + 4×25m progressifs | 5×300m @2:10/100m r20s | Travailler le retournement de mur | Retour 300m", "duration": 55, "level": "Intense"}, {"sport": "R", "title": "Easy Run – 30min", "detail": "Z2 ~5:15/km | Cadence haute 175 pas/min | Étirements quadriceps et ischio après", "duration": 30, "level": "Mod"}]}, {"date": "2026-03-14", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "Sweetspot 3×12min", "detail": "ERG ON | Éch 10min | 3×12min @192W r4min | Pousser à 3h, tirer à 6h, aucune force morte en haut | Retour 8min", "duration": 70, "level": "Intense"}]}, {"date": "2026-03-15", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "BZ", "title": "Zwift Z2 2h15 + Brick 20min", "detail": "Volcano Circuit 2h15 @130-165W | Gel + eau toutes les 40min | Transition : noter le temps | Run 20min Z2-Z3 @4:55/km", "duration": 135, "level": "Mod"}]}]}, {"week": 3, "phase": 1, "phaseName": "BASE & Endurance Fondamentale", "phaseColor": "#B7770D", "startDate": "2026-03-16", "days": [{"date": "2026-03-16", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-03-17", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Tempo 2×20min", "detail": "ERG ON | Éch 12min | 2×20min @192W r5min | FC attendu 155-165bpm | Cadence 90rpm | Si FC >170bpm : passer à 185W", "duration": 90, "level": "Intense"}]}, {"date": "2026-03-18", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Force + intervalles – 60min", "detail": "Éch 400m | 4×(300m Z3 @2:12 r10s + 100m sprint maximal r30s) | 100m sprint : 15m de poussée max puis maintien | Retour 200m", "duration": 60, "level": "Intense"}, {"sport": "Z", "title": "Zwift Z2 récup – 1h", "detail": "Tempus Fugit | <155W | Séance de décompression : aucune intensité", "duration": 60, "level": "Mod"}]}, {"date": "2026-03-19", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Intervalles 6×1000m", "detail": "Éch 2km Z1 | 6×1000m @4:20/km r90s trot | Chaque km en 4:18-4:22 | Bras à 90°, 180 pas/min | ~11km", "duration": 55, "level": "Intense"}]}, {"date": "2026-03-20", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "Continu 2400m", "detail": "Éch 200m | 2400m @2:12/100m non-stop | Premiers 400m à 2:15, tenir 2:12 ensuite | Retour 100m", "duration": 55, "level": "Intense"}, {"sport": "R", "title": "Easy Run – 35min", "detail": "Z2 souple @5:15/km | Finir par 3×20s jambes légères @4:00/km", "duration": 35, "level": "Mod"}]}, {"date": "2026-03-21", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "Sweetspot 3×15min", "detail": "ERG ON | Éch 12min | 3×15min @192W r5min | FC stable 158-165bpm | Tester position aéro sur le dernier intervalle", "duration": 80, "level": "Intense"}]}, {"date": "2026-03-22", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "BZ", "title": "Zwift Z2 2h30 + Brick 25min", "detail": "2h30 @130-165W avec 3×5min @180W Z3 | 2 gels + bidon | Run 25min @4:50/km | À quelle minute les jambes se déverrouillent ?", "duration": 155, "level": "Intense"}]}]}, {"week": 4, "phase": 1, "phaseName": "BASE & Endurance Fondamentale", "phaseColor": "#B7770D", "startDate": "2026-03-23", "days": [{"date": "2026-03-23", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-03-24", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Récup active Z1 – 45min", "detail": "<128W strict | Cadence 95-100rpm (spinning léger) | Aucune intensité : faire circuler le sang, pas s'entraîner", "duration": 45, "level": "Facile"}]}, {"date": "2026-03-25", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Drills + nage facile – 40min", "detail": "Éch 200m | 8×25m drills alternés : catch-up / side kick / doggy paddle / fingertip | 600m Z1 décontractée | Retour 100m dos", "duration": 40, "level": "Facile"}, {"sport": "Z", "title": "Zwift Z2 souple – 1h", "detail": "Tempus Fugit | 130-150W | Pas d'intervalles | Écouter un podcast", "duration": 60, "level": "Facile"}]}, {"date": "2026-03-26", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Easy Run – 30min Z1", "detail": "Allure très lente ~5:40/km | Vrai Z1, jamais essoufflé | Étirements dynamiques avant | Étirements statiques après", "duration": 30, "level": "Facile"}]}, {"date": "2026-03-27", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "Nage facile 1800m", "detail": "Éch 200m | 1800m @2:20/100m | Focus sur la glisse et le relâchement | Compter ses coups de bras toutes les 4 longueurs", "duration": 45, "level": "Facile"}, {"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-03-28", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "Zwift Z2 – 1h00", "detail": "Tempus Fugit | 130-155W | Récupération totale | Aucun intervalle : le corps s'adapte maintenant", "duration": 60, "level": "Facile"}]}, {"date": "2026-03-29", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "R", "title": "Sortie longue facile – 50min", "detail": "Z2 @5:10/km | Conversation possible tout le long | Hydratation 200ml toutes les 20min | Marcher 5min avant et après", "duration": 50, "level": "Facile"}]}]}, {"week": 5, "phase": 1, "phaseName": "BASE & Endurance Fondamentale", "phaseColor": "#B7770D", "startDate": "2026-03-30", "days": [{"date": "2026-03-30", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-03-31", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Zwift Endurance – 2h", "detail": "Tempus Fugit | 1h40 @135-165W Z2 | Finir 20min @178-185W Z3 | Gel à 45min et 90min | Tester position aéro dès 20min d'effort", "duration": 120, "level": "Mod"}]}, {"date": "2026-04-01", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Pyramide + seuil – 55min", "detail": "Éch 300m | Pyramide : 100m @2:00 / 200m @2:05 / 400m @2:10 / 200m @2:05 / 100m @2:00 (r15-25s) | Retour 300m", "duration": 55, "level": "Intense"}, {"sport": "Z", "title": "Zwift Z2 – 1h15", "detail": "Tick Tock | 130-165W | Cadence 88-92rpm | Régularité de la puissance", "duration": 75, "level": "Mod"}]}, {"date": "2026-04-02", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Tempo 45min", "detail": "Éch 10min Z1 | 20min @4:25/km (Z3-Z4) au milieu | Retour 10min | Respiration 2 temps, foulée compacte | Splits : 4:27, 4:25, 4:23, 4:25", "duration": 45, "level": "Intense"}]}, {"date": "2026-04-03", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "5×400m race-pace – 60min", "detail": "Éch 400m + 4×25m accélération | 5×400m @2:10/100m r20s | 1er 100m à 2:12, tenir 2:10, dernier 100m à 2:08 | Retour 400m", "duration": 60, "level": "Intense"}, {"sport": "R", "title": "Easy Run – 30min", "detail": "Z2 @5:15/km | Cadence 175 pas/min | Finir par 5min étirements", "duration": 30, "level": "Mod"}]}, {"date": "2026-04-04", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "FTP 2×18min", "detail": "ERG ON | Éch 15min progressif | 2×18min @213W r5min | FC 168-175bpm | Corps immobile, puissance dans les jambes | Retour 10min", "duration": 80, "level": "Max"}]}, {"date": "2026-04-05", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "BZ", "title": "Zwift Z2 2h30 + Brick 30min", "detail": "2h30 @130-165W + 3×5min @196W | 3 gels + 2 bidons | Transition <90s | Run 30min @4:40/km | Dernière ligne droite avant Phase 2 !", "duration": 180, "level": "Intense"}]}]}, {"week": 6, "phase": 2, "phaseName": "Spécifique Triathlon M · 15 mai 2026", "phaseColor": "#1E8449", "startDate": "2026-04-06", "days": [{"date": "2026-04-06", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-04-07", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Sweetspot 3×20min", "detail": "ERG ON | Éch 15min | 3×20min @192W r5min | FC stable <168bpm | Compter les respirations pour rester relâché | Retour 12min", "duration": 100, "level": "Intense"}]}, {"date": "2026-04-08", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Spécifique M 10×150m @2:08", "detail": "Éch 200m | 10×150m @2:08/100m r15s | Sur chaque 150m : partir à 2:10, accélérer au 2ème 50m, tenir au 3ème | Retour 200m", "duration": 55, "level": "Intense"}, {"sport": "Z", "title": "Zwift Z2 – 1h15", "detail": "Tempus Fugit | 130-165W récup | Tester position aéro 3×5min", "duration": 75, "level": "Mod"}]}, {"date": "2026-04-09", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Allure spécifique 2×20min", "detail": "Éch 10min | 2×20min @4:28/km r5min | Cible : 4:28/km ±3s | Bras actifs, appui avant, rythme 2-2 | ~12km", "duration": 55, "level": "Intense"}]}, {"date": "2026-04-10", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "Descente 5×400m", "detail": "Éch 400m | 5×400m : 2:15/2:13/2:10/2:08/2:05 r20s | Le dernier doit faire mal | Retour 400m", "duration": 55, "level": "Intense"}, {"sport": "R", "title": "Easy Run – 30min", "detail": "Z2 récup | Finir par 4×20s strides @3:50/km r1min", "duration": 30, "level": "Mod"}]}, {"date": "2026-04-11", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "VO2max 6×5min", "detail": "ERG ON | Éch 15min | 6×5min @230W r4min | FC 175-182bpm | Ne pas se lever de la selle, respiration profonde | Retour 10min", "duration": 85, "level": "Intense"}]}, {"date": "2026-04-12", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "BZ", "title": "Zwift Z2-Z3 2h45 + Brick 35min", "detail": "Volcano Flat 2h45 | 2h @140-165W puis 45min @165-180W | Nutrition 70g/h | Run 35min @4:35/km = rythme cible Tri M !", "duration": 175, "level": "Intense"}]}]}, {"week": 7, "phase": 2, "phaseName": "Spécifique Triathlon M · 15 mai 2026", "phaseColor": "#1E8449", "startDate": "2026-04-13", "days": [{"date": "2026-04-13", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-04-14", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Over-Under 4 blocs", "detail": "ERG ON | Éch 12min | 4×(3min @224W + 3min @188W) × 3 | Les 'under' @188W ne récupèrent pas vraiment ! | Retour 10min", "duration": 90, "level": "Intense"}]}, {"date": "2026-04-15", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Race-pace 4×500m", "detail": "Éch 400m | 4×500m @2:08/100m r30s | 250m à 2:08, tenir sur le retour | Retour 300m | Total 2300m", "duration": 60, "level": "Intense"}, {"sport": "Z", "title": "Zwift Z2 – 1h15", "detail": "Tempus Fugit | 130-165W récup | Observer les watts sur relances : rester <190W", "duration": 75, "level": "Mod"}]}, {"date": "2026-04-16", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "10km Tempo @4:30/km", "detail": "Éch 1.5km Z1 | 10km @4:28-4:32/km constant | Splits par km, corriger si déviation | 150ml à 5km | ~12km total", "duration": 50, "level": "Intense"}]}, {"date": "2026-04-17", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "1×1900m non-stop Z3-Z4", "detail": "Éch 300m | 1900m @2:08-2:12/100m (distance Tri M) | Pas de récupération, rester dans sa bulle | Retour 200m", "duration": 45, "level": "Intense"}, {"sport": "R", "title": "Easy Run – 30min", "detail": "Z2 récup @5:15/km | Finir par 4 strides 20s @3:50/km", "duration": 30, "level": "Mod"}]}, {"date": "2026-04-18", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "🔬 RAMP TEST FTP", "detail": "Lancer 'Ramp Test' Zwift | Montée 1W/min | S'arrêter quand impossible de tenir 1min | Résultat ×0.75 = nouvelle FTP | Mettre à jour !", "duration": 60, "level": "Max"}]}, {"date": "2026-04-19", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "BZ", "title": "Zwift Z2-Z3 2h30 + Brick 30min", "detail": "2h30 @130-165W + 2×10min @196W | Simulation T2 : enlever casque, chaussures vélo, mettre run | Run 30min @4:30/km", "duration": 180, "level": "Intense"}]}]}, {"week": 8, "phase": 2, "phaseName": "Spécifique Triathlon M · 15 mai 2026", "phaseColor": "#1E8449", "startDate": "2026-04-20", "days": [{"date": "2026-04-20", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-04-21", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Zwift Endurance – 2h", "detail": "Tempus Fugit | 130-165W steady | Toutes les 30min : 5min position aéro | Gel à 50min et 100min | Dos plat, regard à 10m devant", "duration": 120, "level": "Mod"}]}, {"date": "2026-04-22", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Technique + volume – 50min", "detail": "Éch 400m avec drills : 2×50m catch-up + 2×50m côte à côte | 1600m @2:12/100m | Compter les bras sur 25m : cible 17-19 coups | Retour 200m", "duration": 50, "level": "Mod"}, {"sport": "Z", "title": "Zwift Z2 – 1h", "detail": "Tempus Fugit | 130-155W récup | Relâchement des épaules et des mains", "duration": 60, "level": "Mod"}]}, {"date": "2026-04-23", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Intervalles 5×1200m", "detail": "Éch 2km Z1 | 5×1200m @4:15/km r2min trot | 5:06 par 1200m | Dernier km : lâcher légèrement | ~14km total", "duration": 55, "level": "Intense"}]}, {"date": "2026-04-24", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "1900m race-pace continu @2:08", "detail": "Éch 300m | 1900m @2:08/100m non-stop | Rester dans sa bulle, recalibrer toutes les 4 longueurs | Retour 200m", "duration": 45, "level": "Intense"}, {"sport": "R", "title": "Easy Run – 30min", "detail": "Z2 @5:15/km | Corps fatigué, rythme lent = normal | 5min étirements", "duration": 30, "level": "Mod"}]}, {"date": "2026-04-25", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "Sweetspot 3×20min", "detail": "ERG ON | Éch 15min | 3×20min @192W r5min | Tenir mentalement : couper en 4×5min | FC 160-168bpm | Retour 12min", "duration": 100, "level": "Intense"}]}, {"date": "2026-04-26", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "BZ", "title": "Simulation Tri M 3h + Brick 25min", "detail": "Tempus Fugit 3h | Position aéro max | 3 gels + 3 bidons = 90g glucides | Timer T2 | Run 25min @4:35/km | Nutrition OK ? Position tenue ?", "duration": 205, "level": "Intense"}]}]}, {"week": 9, "phase": 2, "phaseName": "Spécifique Triathlon M · 15 mai 2026", "phaseColor": "#1E8449", "startDate": "2026-04-27", "days": [{"date": "2026-04-27", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-04-28", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Activation + maintien – 1h15", "detail": "Tempus Fugit | 45min @130-165W | 3×4min @180W Z3 r3min | Retour 15min | Garder les sensations, pas d'effort max", "duration": 75, "level": "Facile"}]}, {"date": "2026-04-29", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Activation race-pace – 40min", "detail": "Éch 300m | 4×200m @2:05/100m r20s | 200m retour calme | 4 départs nagés pour simuler la bousculade | Retour 200m", "duration": 40, "level": "Facile"}, {"sport": "Z", "title": "Récup active – 45min", "detail": "<130W | Cadence haute 95rpm | Ventiler les jambes", "duration": 45, "level": "Facile"}]}, {"date": "2026-04-30", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Easy 35min + accélérations", "detail": "Jogging Z1 30min @5:30/km | 4×30s @4:00/km r1min marche | Ces accélérations maintiennent la vivacité neuromusculaire", "duration": 35, "level": "Facile"}]}, {"date": "2026-05-01", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "1000m léger + allures – 30min", "detail": "Éch 200m | 600m Z2 | 4×25m accélération progressive | 100m @2:05/100m | Retour 100m | Garder confiance", "duration": 30, "level": "Facile"}, {"sport": "R", "title": "Jogging 20min Z1", "detail": "Ultra léger @5:40/km | Mobiliser les jambes | Étirements complets 10min après", "duration": 20, "level": "Facile"}]}, {"date": "2026-05-02", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "Activation Zwift – 45min", "detail": "ERG ON | 20min Z2 @145W | 3×3min @213W r3min | Retour 10min | Ces 3×3min maintiennent les adaptations neuromusculaires", "duration": 50, "level": "Facile"}]}, {"date": "2026-05-03", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "Z", "title": "Activation légère – 30min", "detail": "Tempus Fugit | Z1-Z2 @120-150W | 3 accélérations 20s @Z5 | Vérif capteur, développement, position | Préparer sacs transition", "duration": 30, "level": "Facile"}]}]}, {"week": 10, "phase": 2, "phaseName": "Spécifique Triathlon M · 15 mai 2026", "phaseColor": "#1E8449", "startDate": "2026-05-04", "days": [{"date": "2026-05-04", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-05-05", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Activation – 30min", "detail": "Tempus Fugit | 20min Z1 | 3×(30s @230W + 2min Z1) | Retour 5min | Réveiller les jambes | Vérifier capteur", "duration": 30, "level": "Facile"}]}, {"date": "2026-05-06", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "400m activation Z1-Z2", "detail": "200m très lent Z1 | 4×25m progressifs : 2:30/2:20/2:10/2:00 | 100m retour | Juste se mouiller", "duration": 20, "level": "Facile"}, {"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-05-07", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Jogging 20min + 3 accélérations", "detail": "15min Z1 @5:40/km | 3×20s @4:00/km r1min marche | Corps frais, mental aiguisé | Dormir tôt", "duration": 20, "level": "Facile"}]}, {"date": "2026-05-08", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "300m ultra-light", "detail": "100m Z1 | 3×25m coulées vives r30s | 50m retour | Visualiser le départ de nage", "duration": 15, "level": "Facile"}, {"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-05-09", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "Check matériel + 20min Z1", "detail": "Capteur puissance (calibrer!) | Transmission + dérailleur | Freins + pneus 7-8 bar | Nutrition prête | 20min Z1 léger | Préparer sacs T1/T2", "duration": 20, "level": "Facile"}]}, {"date": "2026-05-10", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "RACE", "title": "🏁  TRIATHLON M   ·   🏊 1,9km  —  🚵 90km  —  🏃 21,1km", "detail": "", "duration": 0, "level": "MAX"}]}]}, {"week": 11, "phase": 3, "phaseName": "Récupération + Base Longue Distance", "phaseColor": "#1A5276", "startDate": "2026-05-11", "days": [{"date": "2026-05-11", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-05-12", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Récup active – 45min", "detail": "<128W | Cadence 95-100rpm | Laisser les jambes tourner | La récupération est un entraînement à part entière", "duration": 45, "level": "Facile"}]}, {"date": "2026-05-13", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Détente 1000m libre", "detail": "Pas de chrono | Crawl / dos / brasse librement | Récupération, plaisir | 0 pression", "duration": 30, "level": "Facile"}, {"sport": "Z", "title": "Zwift Z1 – 45min", "detail": "<130W | Cadence haute et légère | Regarder une série, décompresser", "duration": 45, "level": "Facile"}]}, {"date": "2026-05-14", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Easy jog – 30min", "detail": "Z1 pur @5:40/km | Jambes encore lourdes après Tri M : normal | Ne pas regarder la montre", "duration": 30, "level": "Facile"}]}, {"date": "2026-05-15", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "1500m easy", "detail": "300m éch | 1200m @2:20/100m décontracté | Focus : la glisse, l'extension | 100m retour dos", "duration": 40, "level": "Facile"}, {"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-05-16", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "Zwift Z2 – 1h", "detail": "Tempus Fugit | 130-155W | Retour en douceur | Ne pas dépasser 160W : le corps récupère encore", "duration": 60, "level": "Facile"}]}, {"date": "2026-05-17", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "R", "title": "Sortie longue facile – 50min", "detail": "Z2 @5:10/km | Évaluer la récupération : douleurs ? Énergie ? Sommeil ? | Si fatigue : réduire à 35min", "duration": 50, "level": "Facile"}]}]}, {"week": 12, "phase": 3, "phaseName": "Récupération + Base Longue Distance", "phaseColor": "#1A5276", "startDate": "2026-05-18", "days": [{"date": "2026-05-18", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-05-19", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Zwift Endurance – 2h", "detail": "Tempus Fugit | 130-165W | Gel à 50min et 90min | 5min aéro toutes les 30min | Les watts remontent-ils naturellement ?", "duration": 120, "level": "Mod"}]}, {"date": "2026-05-20", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Volume Z3 – 3×600m", "detail": "Éch 400m | 3×600m @2:10/100m r20s | 1ère @2:12, 2ème @2:10, 3ème @2:08 | Retour 300m | Total 2500m", "duration": 55, "level": "Mod"}, {"sport": "Z", "title": "Zwift Z2 – 1h15", "detail": "Tempus Fugit | 130-165W récup | Cadence 88-92rpm", "duration": 75, "level": "Mod"}]}, {"date": "2026-05-21", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Fartlek – 50min", "detail": "Éch 10min | 8×(2min @4:20/km + 2min Z1 trot) | Retour 6min | ~10km | Plus naturel et relâché qu'en Phase 2", "duration": 50, "level": "Intense"}]}, {"date": "2026-05-22", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "2200m continu", "detail": "Éch 200m | 2200m @2:12/100m non-stop | Partir à 2:15, construire progressivement | Retour 200m", "duration": 55, "level": "Intense"}, {"sport": "R", "title": "Easy Run – 35min", "detail": "Z2 récup @5:15/km | 3 strides 20s en fin", "duration": 35, "level": "Mod"}]}, {"date": "2026-05-23", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "Sweetspot 3×15min", "detail": "ERG ON | Éch 12min | 3×15min @192W r5min | Relancer le moteur après Tri M | FC 160-168bpm", "duration": 80, "level": "Intense"}]}, {"date": "2026-05-24", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "BZ", "title": "Zwift Z2 2h45 + Brick 30min", "detail": "Volcano Circuit 2h45 @130-165W | Nutrition 70g/h | Run 30min @4:45/km | Premier long brick post-Tri M", "duration": 175, "level": "Mod"}]}]}, {"week": 13, "phase": 3, "phaseName": "Récupération + Base Longue Distance", "phaseColor": "#1A5276", "startDate": "2026-05-25", "days": [{"date": "2026-05-25", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-05-26", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Zwift Long – 2h30 + Z3", "detail": "Tempus Fugit | 2h10 @130-165W | 4×5min @178-185W Z3 répartis | Gel à 45, 90, 130min | Maintenir 10min aéro consécutives", "duration": 150, "level": "Mod"}]}, {"date": "2026-05-27", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Mixte intensité – 60min", "detail": "Éch 400m | 2×(400m Z3 @2:10 + 200m Z4 @2:05 + 100m sprint) r15-30s | Retour 300m | Total 2600m", "duration": 60, "level": "Intense"}, {"sport": "Z", "title": "Zwift Z2 – 1h30", "detail": "Tempus Fugit | 130-165W | Gel à 45min", "duration": 90, "level": "Mod"}]}, {"date": "2026-05-28", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Semi-long – 1h05", "detail": "Z2 @5:05/km | 20min Z1, 35min Z2, 10min Z2 soutenu | 200ml toutes les 20min | ~13km", "duration": 65, "level": "Mod"}]}, {"date": "2026-05-29", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "5×400m @2:08 race-pace", "detail": "Éch 400m | 5×400m @2:08/100m r20s | Régularité absolue : déviation <2s | Retour 400m", "duration": 60, "level": "Intense"}, {"sport": "R", "title": "Easy Run – 35min", "detail": "Z2 récup @5:15/km | 3 strides 20s", "duration": 35, "level": "Mod"}]}, {"date": "2026-05-30", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "Tempo 2×25min", "detail": "ERG ON | Éch 12min | 2×25min @188W r5min | FC 158-168bpm | Sur le 2ème : tenir mentalement, compter les minutes", "duration": 95, "level": "Intense"}]}, {"date": "2026-05-31", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "BZ", "title": "Zwift Z2-Z3 3h + Brick 35min", "detail": "3h @130-165W + 3×8min @185W Z3 | 4 gels + 3 bidons | Run 35min @4:40/km | Corps fatigué = voulu", "duration": 215, "level": "Intense"}]}]}, {"week": 14, "phase": 3, "phaseName": "Récupération + Base Longue Distance", "phaseColor": "#1A5276", "startDate": "2026-06-01", "days": [{"date": "2026-06-01", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-06-02", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Zwift Long – 3h", "detail": "Tempus Fugit boucles | 130-165W | 4 gels + 3 bidons = ~90g glucides/h | Position aéro 30min consécutives comme objectif", "duration": 180, "level": "Mod"}]}, {"date": "2026-06-03", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Volume + race-pace – 60min", "detail": "Éch 400m | 5×500m @2:10/100m r20s : 2 premiers @2:12, 3 suivants @2:10, 5ème @2:08 | Retour 400m | Total 3300m", "duration": 60, "level": "Intense"}, {"sport": "Z", "title": "Zwift Z2 – 1h30", "detail": "Tempus Fugit | 130-165W | Volume total de la journée important", "duration": 90, "level": "Mod"}]}, {"date": "2026-06-04", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Semi-long – 1h10", "detail": "Z2 @5:05/km | Km 1-3 Z1 | Km 4-12 Z2 | Km 13-14 @4:55/km | 200ml toutes les 20min | ~14km", "duration": 70, "level": "Mod"}]}, {"date": "2026-06-05", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "2000m non-stop @2:12", "detail": "Éch 200m | 2000m @2:12/100m sans arrêt | Nager à l'instinct, check allure toutes les 500m | Retour 200m", "duration": 50, "level": "Intense"}, {"sport": "R", "title": "Easy Run – 40min", "detail": "Z2 @5:15/km | Récupération | 3 strides 20s", "duration": 40, "level": "Mod"}]}, {"date": "2026-06-06", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "FTP 2×20min", "detail": "ERG ON | Éch 15min | 2×20min @213W r6min | Plus facile qu'en S5 ? (adaptation) | FC 168-175bpm | Retour 12min | Comparer !", "duration": 90, "level": "Max"}]}, {"date": "2026-06-07", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "BZ", "title": "Zwift 3h15 + Brick 40min", "detail": "3h15 @130-165W + 3×10min @196W | 5 gels + 4 bidons | Timer T2 | Run 40min @4:40/km | Grosse journée", "duration": 235, "level": "Intense"}]}]}, {"week": 15, "phase": 4, "phaseName": "Spécifique Triathlon L · 5 juillet 2026", "phaseColor": "#7D3C98", "startDate": "2026-06-08", "days": [{"date": "2026-06-08", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-06-09", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Over-Under 5 blocs", "detail": "ERG ON | Éch 15min | 5×(4min @230W + 4min @188W) | 40min de travail | Développe résistance à la fatigue Tri L | Retour 12min", "duration": 110, "level": "Intense"}]}, {"date": "2026-06-10", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Volume LD – 2×1500m @2:08", "detail": "Éch 400m | 2×1500m @2:08/100m r60s | 1ère @2:10, 2ème @2:08 | Retour 400m | Total 3800m | Grosse séance nage", "duration": 70, "level": "Intense"}, {"sport": "Z", "title": "Zwift Z2 – 1h30", "detail": "Tempus Fugit | 130-165W | Corps en mode accumulation maximale", "duration": 90, "level": "Mod"}]}, {"date": "2026-06-11", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Intervalles 4×2km", "detail": "Éch 2km | 4×2km @4:25/km r2min trot | 8:50 par 2km | Retour 1.5km | ~17km | Hydratation à chaque récup", "duration": 60, "level": "Intense"}]}, {"date": "2026-06-12", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "3×1000m @2:08", "detail": "Éch 400m | 3×1000m : 200m @2:10, 600m @2:08, 200m @2:05 | r30s | Retour 400m | Total 3400m", "duration": 65, "level": "Intense"}, {"sport": "R", "title": "Easy Run – 40min", "detail": "Z2 @5:15/km | Manger dans les 30min après (glycogène)", "duration": 40, "level": "Mod"}]}, {"date": "2026-06-13", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "VO2max 7×4min", "detail": "ERG ON | Éch 15min | 7×4min @230W r3min | Le plus dur du programme | FC max 178-185bpm | Ne pas se balancer | Retour 12min", "duration": 90, "level": "Intense"}]}, {"date": "2026-06-14", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "BZ", "title": "Zwift Z2-Z3 3h30 + Brick 45min", "detail": "Tempus Fugit 3h30 | 2h30 Z2 + 1h Z3 | 15min aéro consécutives | 5 gels + 4 bidons | Run 45min @4:40/km | Simulation départ Tri L !", "duration": 255, "level": "Intense"}]}]}, {"week": 16, "phase": 4, "phaseName": "Spécifique Triathlon L · 5 juillet 2026", "phaseColor": "#7D3C98", "startDate": "2026-06-15", "days": [{"date": "2026-06-15", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-06-16", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Zwift Long – 3h45", "detail": "Tempus Fugit boucles | 130-165W + 20min Z3 final | Nutrition 80g/h | Position aéro 20min consécutives | Préparer mentalement les 180km", "duration": 225, "level": "Mod"}]}, {"date": "2026-06-17", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "3800m non-stop – DISTANCE TRI L", "detail": "Éch 300m | 3800m @2:10/100m sans arrêt | Km 1 à 2:15, puis 2:10 stable | Check au virage toutes les 500m | C'est la nage du Tri L !", "duration": 80, "level": "Intense"}, {"sport": "Z", "title": "Zwift Z2 – 1h30", "detail": "Tempus Fugit | 130-165W | Corps en accumulation maximale", "duration": 90, "level": "Mod"}]}, {"date": "2026-06-18", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Long Run – 1h30", "detail": "Z2 @5:05/km | Km 1-5 Z1 | Km 6-15 Z2 @5:05 | Km 16-18 @4:55/km | 150ml toutes les 15min | Gel à 45min | ~21km", "duration": 90, "level": "Mod"}]}, {"date": "2026-06-19", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "2×1900m @2:08 r90s", "detail": "Éch 400m | 2×1900m @2:08/100m r90s | 1ère @2:10 puis 2:08, 2ème @2:08 dès départ | Retour 300m | Total 4000m. Plus grosse séance nage", "duration": 70, "level": "Intense"}, {"sport": "R", "title": "Easy Run – 45min", "detail": "Z2 @5:15/km | Récup après grosse semaine | Manger + dormir = récupération", "duration": 45, "level": "Mod"}]}, {"date": "2026-06-20", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "Sweetspot 3×20min", "detail": "ERG ON | Éch 15min | 3×20min @192W r5min | Semaine max : gérer la fatigue accumulée = voulu | Si mortes : réduire à 3×15min", "duration": 100, "level": "Intense"}]}, {"date": "2026-06-21", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "BZ", "title": "SIMULATION TRI L – 4h + Brick 50min", "detail": "Tempus Fugit 4h | Position aéro max | 80g/h strict : 5 gels + 4 bidons | Timer T2 | Run 50min @5:00/km | Nutrition OK ? Crampes ? Position tenue ? → ajuster pour le jour J", "duration": 290, "level": "Intense"}]}]}, {"week": 17, "phase": 4, "phaseName": "Spécifique Triathlon L · 5 juillet 2026", "phaseColor": "#7D3C98", "startDate": "2026-06-22", "days": [{"date": "2026-06-22", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-06-23", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Zwift Z2 – 1h30 + Z3 léger", "detail": "Tempus Fugit | 1h10 @130-165W | 2×5min @178W Z3 | Retour 15min Z1 | Corps en récup : la fatigue descend, la forme monte", "duration": 90, "level": "Facile"}]}, {"date": "2026-06-24", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "Activation 10×200m Z3", "detail": "Éch 300m | 10×200m @2:10/100m r15s | Check technique entre chaque | Retour 300m | Garder les sensations sans se fatiguer", "duration": 50, "level": "Facile"}, {"sport": "Z", "title": "Zwift Z2 – 1h", "detail": "Tempus Fugit | 130-160W | Aucun effort au-delà de Z2", "duration": 60, "level": "Facile"}]}, {"date": "2026-06-25", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Easy Run 1h + strides", "detail": "50min Z2 @5:10/km | 4×20s @3:50/km r1min marche | Retour 5min | Vivacité neuromusculaire maintenue", "duration": 60, "level": "Facile"}]}, {"date": "2026-06-26", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "1500m race-pace – 40min", "detail": "Éch 300m | 1500m @2:08/100m | 4×25m sprints départ | Retour 200m | Confiance : le travail est fait", "duration": 40, "level": "Facile"}, {"sport": "R", "title": "Easy Run – 30min", "detail": "Z1-Z2 @5:30/km | Ultra léger | Étirements complets 15min", "duration": 30, "level": "Facile"}]}, {"date": "2026-06-27", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "1h + 3×4min @213W", "detail": "ERG ON | 30min Z2 @145W | 3×4min @213W r4min | Retour 15min | Affûtage : faire moins pour performer plus", "duration": 65, "level": "Facile"}]}, {"date": "2026-06-28", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "BZ", "title": "Zwift Z2 1h45 + Run 20min", "detail": "Tempus Fugit 1h45 @130-160W | Timer transition | Run 20min easy @5:15/km | Mémoire musculaire des transitions | Récupérer, dormir, manger", "duration": 125, "level": "Facile"}]}]}, {"week": 18, "phase": 4, "phaseName": "Spécifique Triathlon L · 5 juillet 2026", "phaseColor": "#7D3C98", "startDate": "2026-06-29", "days": [{"date": "2026-06-29", "dayShort": "LUN", "dayFull": "Lundi", "sessions": [{"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-06-30", "dayShort": "MAR", "dayFull": "Mardi", "sessions": [{"sport": "Z", "title": "Activation – 30min", "detail": "Tempus Fugit | 20min Z1 | 3×(30s @230W + 2min Z1) | Réveiller les jambes | Vérif capteur + développement + freins", "duration": 30, "level": "Facile"}]}, {"date": "2026-07-01", "dayShort": "MER", "dayFull": "Mercredi", "sessions": [{"sport": "S", "title": "600m activation Z1", "detail": "200m très lent | 4×25m progressifs : 2:30/2:20/2:10/2:05 | 100m retour | Visualiser départ de nage | Rester calme", "duration": 20, "level": "Facile"}, {"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-07-02", "dayShort": "JEU", "dayFull": "Jeudi", "sessions": [{"sport": "R", "title": "Jogging 20min + accélérations", "detail": "15min Z1 @5:40/km | 3×20s @4:00/km r1min | Frais, léger, confiant | Dormir tôt", "duration": 20, "level": "Facile"}]}, {"date": "2026-07-03", "dayShort": "VEN", "dayFull": "Vendredi", "sessions": [{"sport": "S", "title": "400m ultra-light", "detail": "150m Z1 | 3×25m coulées vives r30s | 25m retour | Le travail est derrière toi. Fais confiance au processus", "duration": 15, "level": "Facile"}, {"sport": "X", "title": "Repos actif", "detail": "Marche légère, étirements 15min, rouleau de massage, sommeil 8h+", "duration": 0, "level": "-"}]}, {"date": "2026-07-04", "dayShort": "SAM", "dayFull": "Samedi", "sessions": [{"sport": "Z", "title": "Check final + 20min Z1", "detail": "Capteur puissance (calibrer!) | Pression pneus 7.5 bar | Dérailleur + transmission | 5 gels dans poche | Sacs T1/T2 prêts | 20min Z1 | Dormir 9h !", "duration": 20, "level": "Facile"}]}, {"date": "2026-07-05", "dayShort": "DIM", "dayFull": "Dimanche", "sessions": [{"sport": "RACE", "title": "🏁  TRIATHLON L   ·   🏊 3,8km  —  🚵 180km  —  🏃 42,2km", "detail": "", "duration": 0, "level": "MAX"}]}]}]
+;
+const SICON = {Z:'🖥️',S:'🏊',R:'🏃',BZ:'🖥️🏃',X:'😴',RACE:'🏁'};
+const SNAME = {Z:'Zwift',S:'Natation',R:'Course',BZ:'Brick',X:'Repos',RACE:'Course !'};
+const SCOL  = {Z:'zwift',S:'swim',R:'run',BZ:'brick',X:'rest',RACE:'race'};
+
+// ── Storage ──────────────────────────────────────────────────
+const LS = {
+  get(k,def=null){ try{const v=localStorage.getItem(k); return v?JSON.parse(v):def}catch{return def}},
+  set(k,v){ try{localStorage.setItem(k,JSON.stringify(v))}catch{}},
+};
+
+// ── State ────────────────────────────────────────────────────
+let wkIdx = 0;
+let garminCfg = LS.get('garmin_cfg', {url:'', email:'', password:'', connected:false});
+let garminData = LS.get('garmin_data', null);
+let garminTab = 'connect';
+
+// ── Utils ────────────────────────────────────────────────────
+function toD(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+function tds(){const t=new Date();return`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`}
+function diff(s){const t=new Date();t.setHours(0,0,0,0);const d=toD(s);d.setHours(0,0,0,0);return Math.round((d-t)/864e5)}
+function fmtL(s){return toD(s).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}
+function fmtS(s){return toD(s).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}
+function findDay(ds){for(const w of PROGRAM)for(const d of w.days)if(d.date===ds)return{week:w,day:d};return null}
+function findWkIdx(ds){
+  for(let i=0;i<PROGRAM.length;i++)for(const d of PROGRAM[i].days)if(d.date===ds)return i;
+  const t=new Date();t.setHours(0,0,0,0);
+  for(let i=0;i<PROGRAM.length;i++){const s=toD(PROGRAM[i].startDate);if(s>=t)return i}
+  return 0;
+}
+
+// ── Session card ─────────────────────────────────────────────
+function sc(sess, idx, garminMatch=null){
+  const dur = sess.duration>0?`${sess.duration}min`:'';
+  const lvl = sess.level!=='-'&&sess.level!=='Mod'?sess.level:'';
+  const hasDet = sess.detail&&sess.detail.length>0;
+  const matchBadge = garminMatch
+    ? `<div class="match-badge ${garminMatch.ok?'match-ok':'match-miss'}">${garminMatch.label}</div>`
+    : '';
+  return`<div class="sc sport-${sess.sport} ai" style="animation-delay:${idx*50}ms">
+    <div class="sc-hd">
+      <div class="sbadge">${SICON[sess.sport]||'🏃'}</div>
+      <div class="smeta">
+        <div class="ssport">${SNAME[sess.sport]||sess.sport}</div>
+        <div class="stitle">${sess.title}</div>
+      </div>
+      <div class="sright">
+        ${dur?`<div class="sdur">${dur}</div>`:''}
+        ${lvl?`<div class="slvl lvl-${sess.level}">${lvl}</div>`:''}
+        ${matchBadge}
+      </div>
+    </div>
+    ${hasDet?`<div class="dtoggle" onclick="td(this)"><span>▸</span> <span>Détails & exercices</span></div>
+    <div class="dbody"><div class="dtext">${sess.detail.replace(/\|/g,'<br>• ').replace(/^/,'• ')}</div></div>`:''}</div>`
+}
+function td(el){const b=el.nextElementSibling;b.classList.toggle('open');el.querySelector('span').textContent=b.classList.contains('open')?'▾':'▸'}
+
+// ── TODAY ────────────────────────────────────────────────────
+function renderToday(){
+  const ts=tds(),found=findDay(ts),c=document.getElementById('todayC');
+  document.getElementById('todayBadge').textContent=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+  if(!found){c.innerHTML=`<div class="empty"><div class="ei">🏁</div><h3>Programme terminé !</h3><p>Tes deux triathlons sont derrière toi.</p></div>`;return}
+  const{week:w,day:d}=found;
+  const matches = garminData ? buildMatches(d, garminData.activities||[]) : {};
+  let h=`<div class="today-dt">${fmtL(d.date)}</div>
+    <div class="today-hl">${d.dayFull}</div>
+    <div class="today-wk" style="color:${w.phaseColor}">S${w.week} · ${w.phaseName}</div>`;
+  d.sessions.forEach((s,i)=>h+=sc(s,i,matches[i]));
+  // Garmin widget if connected
+  if(garminCfg.connected && garminData){
+    h += renderTodayGarminWidget();
+  }
+  c.innerHTML=h;
+}
+
+function buildMatches(day, activities){
+  const matches={};
+  day.sessions.forEach((sess,i)=>{
+    if(sess.sport==='X'||sess.sport==='RACE')return;
+    const act = activities.find(a=>a.date===day.date && a.sport===sess.sport);
+    if(act){
+      const planDur = sess.duration;
+      const realDur = act.duration;
+      const diff = Math.abs(planDur-realDur);
+      matches[i] = {ok: diff<=15, label: act.duration+'min réalisé', act};
+    }
+  });
+  return matches;
+}
+
+function renderTodayGarminWidget(){
+  if(!garminData||!garminData.stats)return'';
+  const s=garminData.stats;
+  return`<div style="height:12px"></div>
+  <div class="section-title">Données Garmin · Semaine en cours</div>
+  <div class="sgrid">
+    <div class="scard"><div class="slabel">Zwift</div><div class="sval" style="color:var(--zwift)">${s.weekly?.zwift||'—'}<span class="sunit">min</span></div></div>
+    <div class="scard"><div class="slabel">Course</div><div class="sval" style="color:var(--run)">${s.weekly?.run||'—'}<span class="sunit">min</span></div></div>
+    <div class="scard"><div class="slabel">Puissance moy.</div><div class="sval" style="color:var(--zwift)">${s.avgPower||'—'}<span class="sunit">W</span></div><div class="strend">FTP cible : 213W</div></div>
+    <div class="scard"><div class="slabel">Allure moy.</div><div class="sval" style="color:var(--run)">${s.avgPaceFmt||'—'}<span class="sunit">/km</span></div><div class="strend">Cible : 4:28/km</div></div>
+  </div>`;
+}
+
+// ── WEEK ─────────────────────────────────────────────────────
+function renderWeek(){
+  const w=PROGRAM[wkIdx],ts=tds();
+  const end=w.days[6]?w.days[6].date:w.days[w.days.length-1].date;
+  document.getElementById('wkN').textContent=`Semaine ${w.week} / 18`;
+  document.getElementById('wkD').textContent=`${fmtS(w.startDate)} → ${fmtS(end)}`;
+  let h=`<div class="ppill" style="background:${w.phaseColor}22;border:1px solid ${w.phaseColor}55;color:${w.phaseColor}">${w.phaseName}</div>`;
+  w.days.forEach(day=>{
+    const isT=day.date===ts,tot=day.sessions.reduce((a,s)=>a+s.duration,0);
+    h+=`<div style="margin-bottom:4px"><div class="dlrow">
+      <div class="dlbl">${day.dayShort}</div>
+      <div style="font-size:11px;color:var(--muted)">${fmtS(day.date)}</div>
+      ${isT?'<div class="tdot"></div><span style="font-size:11px;color:var(--zwift);font-weight:700">Aujourd\'hui</span>':''}
+      ${tot>0?`<div style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted)">${tot}min</div>`:''}
+    </div>`;
+    day.sessions.forEach((s,i)=>h+=sc(s,i));
+    h+='</div>';
+  });
+  document.getElementById('weekC').innerHTML=h;
+}
+function chWk(d){wkIdx=Math.max(0,Math.min(PROGRAM.length-1,wkIdx+d));renderWeek();document.getElementById('view-week').scrollTop=0}
+
+// ── PROG ─────────────────────────────────────────────────────
+function renderProg(){
+  let phases={};
+  PROGRAM.forEach(w=>{if(!phases[w.phase])phases[w.phase]={name:w.phaseName,color:w.phaseColor,weeks:[]};phases[w.phase].weeks.push(w)});
+  let h='';
+  Object.entries(phases).forEach(([ph,p])=>{
+    h+=`<div class="ph-block"><div class="ph-hd" style="background:${p.color}22;border:1px solid ${p.color}44;color:${p.color}"><span>Phase ${ph} · ${p.name}</span><span style="font-family:var(--mono);font-size:11px;opacity:.7">${p.weeks.length} sem.</span></div>`;
+    p.weeks.forEach(w=>{
+      const end=w.days[6]?w.days[6].date:w.days[w.days.length-1].date;
+      const sports=[...new Set(w.days.flatMap(d=>d.sessions.map(s=>s.sport)).filter(s=>s!=='X'&&s!=='RACE'))];
+      const tot=w.days.reduce((a,d)=>a+d.sessions.reduce((b,s)=>b+s.duration,0),0);
+      const hasRace=w.days.some(d=>d.sessions.some(s=>s.sport==='RACE'));
+      h+=`<div class="wrow" onclick="jumpWk(${w.week-1})">
+        <div class="wnum" style="color:${p.color}">S${w.week}</div>
+        <div class="wdts">${fmtS(w.startDate)} → ${fmtS(end)}</div>
+        <div class="wspts">${sports.map(s=>`<div class="sdot" style="background:var(--${SCOL[s]})"></div>`).join('')}${hasRace?'🏁':''}</div>
+        <div class="wtot">${tot}min</div>
+      </div>`;
+    });
+    h+='</div>';
+  });
+  document.getElementById('progC').innerHTML=h;
+}
+function jumpWk(i){wkIdx=i;sv('week',document.querySelectorAll('.bni')[1]);renderWeek()}
+
+// ── GARMIN ───────────────────────────────────────────────────
+function renderGarmin(){
+  const connected = garminCfg.connected;
+  document.getElementById('garminC').innerHTML = `
+    <div class="tab-row">
+      <button class="tab-btn ${garminTab==='connect'?'active':''}" onclick="setGTab('connect')">⚙️ Config</button>
+      <button class="tab-btn ${garminTab==='stats'?'active':''}" onclick="setGTab('stats')">📊 Stats</button>
+      <button class="tab-btn ${garminTab==='activities'?'active':''}" onclick="setGTab('activities')">🏃 Activités</button>
+      <button class="tab-btn ${garminTab==='setup'?'active':''}" onclick="setGTab('setup')">📖 Guide</button>
+    </div>
+    <div id="gTabContent"></div>`;
+  renderGTab();
+}
+
+function setGTab(t){garminTab=t;renderGarmin()}
+
+function renderGTab(){
+  const c=document.getElementById('gTabContent');
+  if(garminTab==='connect') c.innerHTML=renderConnectTab();
+  else if(garminTab==='stats') c.innerHTML=renderStatsTab();
+  else if(garminTab==='activities') c.innerHTML=renderActivitiesTab();
+  else c.innerHTML=renderGuideTab();
+}
+
+function renderConnectTab(){
+  const ok=garminCfg.connected;
+  return`
+  <div class="gcard">
+    <div class="status-bar ${ok?'status-ok':'status-warn'}">${ok?'✅ Connecté à Garmin Connect — '+garminCfg.name:'⚠️ Non connecté'}</div>
+    <h3>Configuration</h3>
+    <p>Entre l'URL de ton backend Vercel et tes identifiants Garmin Connect. Tes données sont stockées uniquement sur ton téléphone.</p>
+
+    <div class="form-group">
+      <label class="form-label">URL du backend Vercel</label>
+      <input class="form-input" id="gUrl" type="url" placeholder="https://ton-app.vercel.app" value="${garminCfg.url||''}">
+      <div class="url-hint">Obtenue après déploiement sur Vercel — voir onglet Guide</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email Garmin Connect</label>
+      <input class="form-input" id="gEmail" type="email" placeholder="ton@email.com" value="${garminCfg.email||''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mot de passe Garmin Connect</label>
+      <input class="form-input" id="gPwd" type="password" placeholder="••••••••" value="${garminCfg.password||''}">
+    </div>
+    <button class="btn btn-green" onclick="testGarmin()" id="gConnBtn">
+      <span id="gBtnTxt">🔗 Tester la connexion</span>
+    </button>
+  </div>
+  <div id="gConnResult"></div>
+  ${ok?`<button class="btn btn-outline" style="margin-top:8px" onclick="syncGarmin()"><span id="syncTxt">🔄 Synchroniser les données</span></button>`:''}`;
+}
+
+function renderStatsTab(){
+  if(!garminCfg.connected){
+    return`<div class="empty"><div class="ei">⌚</div><h3>Non connecté</h3><p>Configure ta connexion Garmin dans l'onglet Config.</p></div>`;
+  }
+  if(!garminData||!garminData.stats){
+    return`<div class="gcard"><p>Aucune donnée synchronisée.</p><button class="btn btn-green" onclick="syncGarmin()">🔄 Synchroniser</button></div>`;
+  }
+  const s=garminData.stats;
+  const ts = garminData.syncTime ? new Date(garminData.syncTime).toLocaleString('fr-FR') : '?';
+  return`
+  <div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-family:var(--mono)">Dernière synchro : ${ts}</div>
+  <div class="section-title">Semaine en cours</div>
+  <div class="sgrid">
+    <div class="scard"><div class="slabel">Zwift total</div><div class="sval" style="color:var(--zwift)">${s.weekly?.zwift||'—'}<span class="sunit">min</span></div></div>
+    <div class="scard"><div class="slabel">Course totale</div><div class="sval" style="color:var(--run)">${s.weekly?.run||'—'}<span class="sunit">min</span></div></div>
+    <div class="scard"><div class="slabel">Natation</div><div class="sval" style="color:var(--swim)">${s.weekly?.swim||'—'}<span class="sunit">min</span></div></div>
+    <div class="scard"><div class="slabel">Volume total</div><div class="sval">${s.weekly?.total||'—'}<span class="sunit">min</span></div></div>
+  </div>
+  <div class="section-title">Moyennes récentes (30j)</div>
+  <div class="sgrid">
+    <div class="scard"><div class="slabel">Puissance Zwift</div><div class="sval" style="color:var(--zwift)">${s.avgPower||'—'}<span class="sunit">W</span></div><div class="strend">FTP cible : 213W${s.avgPower&&s.avgPower>=213?' 🔥':''}</div></div>
+    <div class="scard"><div class="slabel">Allure course</div><div class="sval" style="color:var(--run)">${s.avgPaceFmt||'—'}<span class="sunit">/km</span></div><div class="strend">Cible : 4:28/km</div></div>
+    <div class="scard"><div class="slabel">Allure nage</div><div class="sval" style="color:var(--swim)">${s.avgSwimFmt||'—'}<span class="sunit">/100m</span></div><div class="strend">Cible : 2:08/100m</div></div>
+    <div class="scard"><div class="slabel">Progression FTP</div><div class="sval" style="color:var(--zwift)">${s.avgPower?Math.round((s.avgPower/213)*100)+'%':'—'}</div><div class="strend">de l'objectif</div></div>
+  </div>
+  <button class="btn btn-outline" onclick="syncGarmin()"><span id="syncTxt2">🔄 Actualiser</span></button>`;
+}
+
+function renderActivitiesTab(){
+  if(!garminCfg.connected){
+    return`<div class="empty"><div class="ei">⌚</div><h3>Non connecté</h3><p>Configure ta connexion Garmin dans l'onglet Config.</p></div>`;
+  }
+  if(!garminData||!garminData.activities||garminData.activities.length===0){
+    return`<div class="gcard"><p>Aucune activité synchronisée.</p><button class="btn btn-green" onclick="syncGarmin()">🔄 Synchroniser</button></div>`;
+  }
+  const acts = garminData.activities.slice(0,20);
+  let h=`<div style="font-size:11px;color:var(--muted);margin-bottom:12px">${acts.length} dernières activités</div>`;
+  acts.forEach(a=>{
+    const ic = SICON[a.sport]||'🏃';
+    const col = `var(--${SCOL[a.sport]||'rest'})`;
+    const stats = [
+      a.duration?`<span>${a.duration}min</span>`:'',
+      a.distance&&a.distance>0?`<span>${a.distance}km</span>`:'',
+      a.avgPower?`<span style="color:var(--zwift)">${a.avgPower}W</span>`:'',
+      a.avgPace?`<span style="color:var(--run)">${a.avgPace}/km</span>`:'',
+      a.swimPace?`<span style="color:var(--swim)">${a.swimPace}/100m</span>`:'',
+      a.avgHR?`<span>♥ ${a.avgHR}bpm</span>`:'',
+    ].filter(Boolean);
+    h+=`<div class="act-item">
+      <div class="act-icon" style="background:${col}22">${ic}</div>
+      <div class="act-body">
+        <div class="act-name">${a.name}</div>
+        <div class="act-date">${a.date}</div>
+        <div class="act-stats">${stats.map(s=>`<div class="act-stat">${s}</div>`).join('')}</div>
+      </div>
+    </div>`;
+  });
+  return h;
+}
+
+function renderGuideTab(){
+  return`
+  <div class="gcard">
+    <h3>📖 Déployer le backend Garmin sur Vercel</h3>
+    <p>Ce guide t'explique comment mettre en ligne le serveur qui connecte l'app à Garmin. C'est une procédure unique d'environ 10 minutes, sans ligne de commande.</p>
+  </div>
+  <ul class="step-list">
+    <li class="step-item"><div class="step-n">1</div><div class="step-body">
+      <div class="step-t">Crée un compte GitHub (gratuit)</div>
+      <div class="step-d">Va sur <strong>github.com</strong>, crée un compte gratuit si tu n'en as pas.</div>
+      <a class="step-code" href="https://github.com/signup" target="_blank">→ github.com/signup</a>
+    </div></li>
+    <li class="step-item"><div class="step-n">2</div><div class="step-body">
+      <div class="step-t">Crée un nouveau dépôt GitHub</div>
+      <div class="step-d">Clique sur le <strong>+</strong> en haut à droite → "New repository" → nomme-le <strong>tritrain-backend</strong> → Public → Create.</div>
+    </div></li>
+    <li class="step-item"><div class="step-n">3</div><div class="step-body">
+      <div class="step-t">Uploade les fichiers du backend</div>
+      <div class="step-d">Télécharge les 3 fichiers fournis (<strong>api/garmin.py</strong>, <strong>requirements.txt</strong>, <strong>vercel.json</strong>) et glisse-les dans GitHub via "uploading an existing file".</div>
+    </div></li>
+    <li class="step-item"><div class="step-n">4</div><div class="step-body">
+      <div class="step-t">Crée un compte Vercel et importe le dépôt</div>
+      <div class="step-d">Va sur <strong>vercel.com</strong>, connecte-toi avec GitHub, clique "Add New Project", sélectionne <strong>tritrain-backend</strong>, puis "Deploy".</div>
+      <a class="step-code" href="https://vercel.com/new" target="_blank">→ vercel.com/new</a>
+    </div></li>
+    <li class="step-item"><div class="step-n">5</div><div class="step-body">
+      <div class="step-t">Copie l'URL Vercel dans l'app</div>
+      <div class="step-d">Après déploiement, Vercel t'affiche une URL comme <strong>tritrain-backend.vercel.app</strong>. Copie-la dans l'onglet Config ci-dessus.</div>
+    </div></li>
+    <li class="step-item"><div class="step-n">6</div><div class="step-body">
+      <div class="step-t">Entre tes identifiants Garmin et teste</div>
+      <div class="step-d">Dans l'onglet Config, entre l'URL + ton email Garmin + ton mot de passe Garmin Connect, puis clique "Tester la connexion".</div>
+    </div></li>
+  </ul>`;
+}
+
+// ── Garmin API calls ─────────────────────────────────────────
+async function testGarmin(){
+  const url   = document.getElementById('gUrl').value.trim().replace(/\/$/,'');
+  const email = document.getElementById('gEmail').value.trim();
+  const pwd   = document.getElementById('gPwd').value.trim();
+  if(!url||!email||!pwd){
+    document.getElementById('gConnResult').innerHTML=`<div class="status-bar status-err">⚠️ Remplis tous les champs</div>`;
+    return;
+  }
+  const btn=document.getElementById('gConnBtn');
+  btn.disabled=true;
+  document.getElementById('gBtnTxt').innerHTML=`<span class="loader"></span> Connexion en cours...`;
+  document.getElementById('gConnResult').innerHTML='';
+  try{
+    const r = await fetch(`${url}/api/garmin/auth`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:pwd})
+    });
+    const d = await r.json();
+    if(d.success){
+      garminCfg = {url, email, password:pwd, connected:true, name:d.name};
+      LS.set('garmin_cfg', garminCfg);
+      document.getElementById('gConnResult').innerHTML=
+        `<div class="status-bar status-ok">✅ Connecté ! Bienvenue ${d.name}</div>`;
+      setTimeout(()=>{renderGarmin();syncGarmin()},1000);
+    } else {
+      document.getElementById('gConnResult').innerHTML=
+        `<div class="status-bar status-err">❌ ${d.error||'Connexion échouée'}</div>`;
+    }
+  }catch(e){
+    document.getElementById('gConnResult').innerHTML=
+      `<div class="status-bar status-err">❌ Impossible de joindre le backend : ${e.message}</div>`;
+  }finally{
+    btn.disabled=false;
+    document.getElementById('gBtnTxt').textContent='🔗 Tester la connexion';
+  }
+}
+
+async function syncGarmin(){
+  const{url,email,password}=garminCfg;
+  if(!url||!email||!password)return;
+  const stxt=document.getElementById('syncTxt')||document.getElementById('syncTxt2');
+  if(stxt){stxt.innerHTML=`<span class="loader"></span> Synchronisation...`;}
+  try{
+    const[rActs,rStats]=await Promise.all([
+      fetch(`${url}/api/garmin/activities?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&days=14`),
+      fetch(`${url}/api/garmin/stats?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`),
+    ]);
+    const[dActs,dStats]=await Promise.all([rActs.json(),rStats.json()]);
+    garminData = {
+      activities: dActs.activities||[],
+      stats: dStats,
+      syncTime: Date.now()
+    };
+    LS.set('garmin_data', garminData);
+    renderGarmin();
+    renderToday(); // refresh today with new data
+  }catch(e){
+    console.error('Sync error',e);
+    if(stxt){stxt.textContent='🔄 Réessayer';}
+  }
+}
+
+// ── Nav ──────────────────────────────────────────────────────
+function sv(name,el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.bni').forEach(b=>b.classList.remove('active'));
+  document.getElementById(`view-${name}`).classList.add('active');
+  el.classList.add('active');
+}
+
+// ── Init ─────────────────────────────────────────────────────
+function init(){
+  // Countdowns
+  const dM=diff('2026-05-15'),dL=diff('2026-07-05');
+  document.getElementById('dM').textContent=dM>0?`J-${dM}`:dM===0?'AUJOURD\'HUI':'Terminé';
+  document.getElementById('dL').textContent=dL>0?`J-${dL}`:dL===0?'AUJOURD\'HUI':'Terminé';
+  // Current week
+  wkIdx=findWkIdx(tds());
+  const cw=PROGRAM[wkIdx];
+  if(cw){document.getElementById('cwn').textContent=`S${cw.week}/18`;document.getElementById('cpn').textContent=`Phase ${cw.phase}`}
+  renderToday();renderWeek();renderProg();renderGarmin();
+}
+init();
+</script>
+</body>
+</html>
