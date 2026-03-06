@@ -1,3 +1,5 @@
+import { GarminConnect } from 'garmin-connect';
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -5,90 +7,26 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const path = req.url.split('?')[0].replace('/api/index', '');
+  const path = req.url.split('?')[0];
 
-  // ── Auth helper ──────────────────────────────────────────
-  async function garminLogin(email, password) {
-    const BASE = 'https://connect.garmin.com';
-    const SSO  = 'https://sso.garmin.com/sso';
-
-    // 1. Get CSRF token
-    const loginPage = await fetch(`${SSO}/signin?service=${encodeURIComponent(BASE + '/modern')}`, {
-      headers: { 'User-Agent': 'Mozilla/5.0' }
-    });
-    const html = await loginPage.text();
-    const csrf = html.match(/name="_csrf"\s+value="([^"]+)"/)?.[1] || '';
-    const cookies = loginPage.headers.get('set-cookie') || '';
-
-    // 2. POST credentials
-    const params = new URLSearchParams({
-      username: email,
-      password,
-      _csrf: csrf,
-      embed: 'false',
-      lt: '',
-      execution: 'e1s1',
-      _eventId: 'submit',
-      displayNameRequired: 'false',
-    });
-
-    const loginResp = await fetch(`${SSO}/signin?service=${encodeURIComponent(BASE + '/modern')}`, {
-      method: 'POST',
-      headers: {
-        'User-Agent': 'Mozilla/5.0',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Cookie': cookies,
-        'Origin': SSO,
-        'Referer': `${SSO}/signin`,
-      },
-      body: params.toString(),
-      redirect: 'manual',
-    });
-
-    const allCookies = [cookies, loginResp.headers.get('set-cookie') || ''].join('; ');
-    const ticket = loginResp.headers.get('location') || '';
-
-    // 3. Exchange ticket
-    if (ticket) {
-      const ticketResp = await fetch(ticket, {
-        headers: { 'User-Agent': 'Mozilla/5.0', 'Cookie': allCookies },
-        redirect: 'manual',
-      });
-      const finalCookies = [allCookies, ticketResp.headers.get('set-cookie') || ''].join('; ');
-      return finalCookies;
-    }
-    throw new Error('Login failed — mauvais identifiants ?');
+  async function login(email, password) {
+    const client = new GarminConnect({ username: email, password });
+    await client.login();
+    return client;
   }
 
-  async function garminGet(url, cookies) {
-    const r = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0',
-        'Cookie': cookies,
-        'NK': 'NT',
-        'X-app-ver': '4.70.1.0',
-        'Accept': 'application/json',
-      }
-    });
-    if (!r.ok) throw new Error(`Garmin API error ${r.status} on ${url}`);
-    return r.json();
-  }
-
-  // ── POST /api/garmin/auth ─────────────────────────────────
+  // ── POST /api/auth ────────────────────────────────────────
   if (req.method === 'POST') {
     const { email, password } = req.body || {};
     if (!email || !password)
       return res.status(400).json({ error: 'Email et mot de passe requis' });
     try {
-      const cookies = await garminLogin(email, password);
-      const profile = await garminGet(
-        'https://connect.garmin.com/modern/proxy/userprofile-service/socialProfile',
-        cookies
-      );
+      const client = await login(email, password);
+      const profile = await client.getUserProfile();
       const name = profile.displayName || profile.userName || email;
       return res.status(200).json({ success: true, name });
     } catch (e) {
-      return res.status(401).json({ error: e.message });
+      return res.status(401).json({ error: `Connexion échouée : ${e.message}` });
     }
   }
 
@@ -98,22 +36,23 @@ export default async function handler(req, res) {
     if (!email || !password)
       return res.status(400).json({ error: 'email et password requis' });
 
-    let cookies;
+    // Health check
+    if (path === '/api/index' || path === '/') {
+      return res.status(200).json({ status: 'ok', message: 'TriTrain Garmin API' });
+    }
+
+    let client;
     try {
-      cookies = await garminLogin(email, password);
+      client = await login(email, password);
     } catch (e) {
-      return res.status(401).json({ error: e.message });
+      return res.status(401).json({ error: `Connexion échouée : ${e.message}` });
     }
 
     // GET /api/garmin/activities
-    if (path === '/garmin/activities' || path === '/api/garmin/activities') {
+    if (path.includes('/activities')) {
       try {
-        const limit = parseInt(days) * 2;
-        const data  = await garminGet(
-          `https://connect.garmin.com/modern/proxy/activitylist-service/activities/search/activities?limit=${limit}&start=0`,
-          cookies
-        );
-        const activities = (data || []).map(a => {
+        const activities = await client.getActivities(0, parseInt(days) * 2);
+        const result = activities.map(a => {
           const sport = mapSport(a.activityType?.typeKey || '');
           const dur_s = a.duration || 0;
           const dist  = a.distance || 0;
@@ -130,24 +69,22 @@ export default async function handler(req, res) {
             maxHR:     a.maxHR || null,
             avgPower:  a.avgPower || null,
             normPower: a.normPower || null,
-            avgPace:   sport === 'R' && a.averageSpeed ? fmtTime(1000 / a.averageSpeed) : null,
+            avgPace:   sport === 'R' && a.averageSpeed
+              ? fmtTime(1000 / a.averageSpeed) : null,
             swimPace,
             calories:  a.calories || null,
           };
         });
-        return res.status(200).json({ activities, count: activities.length });
+        return res.status(200).json({ activities: result, count: result.length });
       } catch (e) {
         return res.status(500).json({ error: e.message });
       }
     }
 
     // GET /api/garmin/stats
-    if (path === '/garmin/stats' || path === '/api/garmin/stats') {
+    if (path.includes('/stats')) {
       try {
-        const data = await garminGet(
-          `https://connect.garmin.com/modern/proxy/activitylist-service/activities/search/activities?limit=60&start=0`,
-          cookies
-        );
+        const activities = await client.getActivities(0, 60);
         const today     = new Date();
         const monOffset = (today.getDay() + 6) % 7;
         const weekStart = new Date(today);
@@ -157,7 +94,7 @@ export default async function handler(req, res) {
         const weekly = { swim: 0, zwift: 0, run: 0, total: 0 };
         const powers = [], paces = [], swims = [];
 
-        for (const a of (data || [])) {
+        for (const a of activities) {
           const sport = mapSport(a.activityType?.typeKey || '');
           const dur   = (a.duration || 0) / 60;
           const date  = (a.startTimeLocal || '').slice(0, 10);
@@ -177,10 +114,15 @@ export default async function handler(req, res) {
         }
 
         return res.status(200).json({
-          weekly:     { swim: Math.round(weekly.swim), zwift: Math.round(weekly.zwift), run: Math.round(weekly.run), total: Math.round(weekly.total) },
+          weekly: {
+            swim:  Math.round(weekly.swim),
+            zwift: Math.round(weekly.zwift),
+            run:   Math.round(weekly.run),
+            total: Math.round(weekly.total),
+          },
           avgPower:   powers.length ? Math.round(powers.reduce((a,b)=>a+b)/powers.length) : null,
-          avgPaceFmt: paces.length  ? fmtTime(paces.reduce((a,b)=>a+b)/paces.length)     : null,
-          avgSwimFmt: swims.length  ? fmtTime(swims.reduce((a,b)=>a+b)/swims.length)      : null,
+          avgPaceFmt: paces.length  ? fmtTime(paces.reduce((a,b)=>a+b)/paces.length)      : null,
+          avgSwimFmt: swims.length  ? fmtTime(swims.reduce((a,b)=>a+b)/swims.length)       : null,
         });
       } catch (e) {
         return res.status(500).json({ error: e.message });
@@ -195,13 +137,13 @@ export default async function handler(req, res) {
 
 function mapSport(tk) {
   tk = tk.toLowerCase();
-  if (tk.includes('swim'))                                          return 'S';
-  if (['cycling','indoor','virtual','zwift'].some(x=>tk.includes(x))) return 'Z';
-  if (['running','trail'].some(x=>tk.includes(x)))                  return 'R';
+  if (tk.includes('swim'))                                              return 'S';
+  if (['cycling','indoor','virtual','zwift'].some(x => tk.includes(x))) return 'Z';
+  if (['running','trail'].some(x => tk.includes(x)))                    return 'R';
   return 'OTHER';
 }
 
 function fmtTime(sec) {
   if (!sec) return null;
-  return `${Math.floor(sec/60)}:${String(Math.floor(sec%60)).padStart(2,'0')}`;
+  return `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
 }
