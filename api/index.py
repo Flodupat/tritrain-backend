@@ -1,25 +1,11 @@
-from http.server import BaseHTTPRequestHandler
-import json
-
-class handler(BaseHTTPRequestHandler):
-
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
-        self.wfile.write(json.dumps({"status": "ok", "message": "TriTrain backend fonctionne !"}).encode())
-
-    def do_POST(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
-        self.wfile.write(json.dumps({"status": "ok"}).encode())
-```
-
-5. Commit
-
-Puis teste dans le navigateur :
-```
-https://tritrain-backend-17ro.vercel.app/api/index.py
+def handler(request):
+    import json
+    body = json.dumps({"status": "ok", "message": "TriTrain backend fonctionne !"})
+    return {
+        "statusCode": 200,
+        "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        },
+        "body": body
+    }
