@@ -55,8 +55,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .sright{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
 .sdur{font-family:var(--mono);font-size:13px;font-weight:500}
 .slvl{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px}
-.dtoggle{display:flex;align-items:center;gap:6px;padding:8px 14px;cursor:pointer;font-size:11px;font-weight:600;color:var(--muted);border-top:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);transition:color .2s}
-.dtoggle:active{color:var(--text)}
+.dtoggle{display:flex;align-items:center;gap:6px;padding:8px 14px;cursor:pointer;font-size:11px;font-weight:600;color:var(--muted);border-top:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)}
 .dbody{display:none}
 .dbody.open{display:block}
 .dtext{font-size:12px;line-height:1.6;color:var(--muted);padding:10px 14px 12px}
@@ -70,7 +69,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .lvl-Intense{background:rgba(249,115,22,.2);color:var(--run)} .lvl-Max{background:rgba(239,68,68,.2);color:var(--race)} .lvl-Facile{background:rgba(34,197,94,.2);color:var(--zwift)} .lvl-Mod{background:rgba(107,127,163,.15);color:var(--muted)}
 
 .wknav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.wkbtn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.wkbtn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .wkbtn:active{background:var(--bg3)}
 .wkinfo{text-align:center}
 .wknum{font-size:15px;font-weight:700}
@@ -92,59 +91,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .sdot{width:8px;height:8px;border-radius:50%}
 .wtot{font-size:11px;color:var(--muted);font-family:var(--mono)}
 
-/* ── GARMIN ── */
-.gcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:14px}
-.gcard h3{font-size:15px;font-weight:700;margin-bottom:6px}
-.gcard p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px}
-.status-bar{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;font-size:12px;font-weight:600;margin-bottom:12px}
-.status-warn{background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);color:var(--brick)}
-.status-ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--zwift)}
-.status-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--race)}
-
-.form-group{margin-bottom:12px}
-.form-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;display:block}
-.form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:11px 13px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:border-color .2s}
-.form-input:focus{border-color:var(--zwift)}
-.form-input::placeholder{color:var(--muted)}
-
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:8px;border:none;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:opacity .2s;width:100%}
-.btn:active{opacity:.8}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn-green{background:var(--zwift);color:#000}
-.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
-
-.url-input-wrap{position:relative}
-.url-hint{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5}
-
-.step-list{list-style:none;display:flex;flex-direction:column;gap:10px}
-.step-item{display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--bg3);border-radius:8px}
-.step-n{width:24px;height:24px;border-radius:50%;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--zwift);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.step-body{flex:1}
-.step-t{font-size:13px;font-weight:600;margin-bottom:2px}
-.step-d{font-size:12px;color:var(--muted);line-height:1.5}
-.step-code{font-family:var(--mono);font-size:11px;background:rgba(0,0,0,.4);color:var(--zwift);padding:6px 10px;border-radius:6px;margin-top:6px;word-break:break-all;display:block}
-
-.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.scard{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px}
-.slabel{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-.sval{font-size:22px;font-weight:800;font-family:var(--mono)}
-.sunit{font-size:12px;color:var(--muted);margin-left:4px}
-.strend{font-size:11px;margin-top:2px;color:var(--muted)}
-
-.act-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
-.act-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.act-body{flex:1;min-width:0}
-.act-name{font-size:13px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.act-date{font-size:11px;color:var(--muted);font-family:var(--mono)}
-.act-stats{display:flex;gap:10px;margin-top:4px}
-.act-stat{font-size:11px;color:var(--muted)}
-.act-stat span{color:var(--text);font-weight:600}
-
-.match-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px}
-.match-ok{background:rgba(34,197,94,.15);color:var(--zwift)}
-.match-miss{background:rgba(239,68,68,.1);color:var(--race)}
-
-.section-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;margin-top:4px}
+.section-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}
 .page-pb{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
 
 .bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,15,30,.95);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:100}
@@ -152,11 +99,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .bni.active{color:var(--zwift)}
 .bni-icon{font-size:20px;margin-bottom:3px;line-height:1}
 .bni-lbl{font-size:10px;font-weight:600;letter-spacing:.5px}
-
-.loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(34,197,94,.3);border-top-color:var(--zwift);border-radius:50%;animation:spin .6s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.ai{animation:fadeIn .3s ease both}
 
 .today-dt{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
 .today-hl{font-size:26px;font-weight:800;margin-bottom:4px}
@@ -166,9 +108,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .empty h3{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px}
 .empty p{font-size:13px;line-height:1.6}
 
-.tab-row{display:flex;gap:8px;margin-bottom:16px}
-.tab-btn{flex:1;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
-.tab-btn.active{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:var(--zwift)}
+/* Zones */
+.zones-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.zone-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px}
+.zone-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.zone-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.zone-label{font-size:11px;color:var(--muted)}
+.zone-val{font-size:11px;font-weight:600;font-family:var(--mono)}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ai{animation:fadeIn .3s ease both}
 </style>
 </head>
 <body>
@@ -187,8 +136,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   <div class="chip w"><div class="chip-lbl">Semaine</div><div class="chip-val" id="cwn">—</div><div class="chip-sub" id="cpn">—</div></div>
 </div>
 
-<div id="view-today" class="view active page-pb"><div id="todayC"></div></div>
-<div id="view-week"  class="view page-pb">
+<div id="view-today"  class="view active page-pb"><div id="todayC"></div></div>
+<div id="view-week"   class="view page-pb">
   <div class="wknav">
     <button class="wkbtn" onclick="chWk(-1)">‹</button>
     <div class="wkinfo"><div class="wknum" id="wkN"></div><div class="wkdts" id="wkD"></div></div>
@@ -197,13 +146,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   <div id="weekC"></div>
 </div>
 <div id="view-prog"   class="view page-pb"><div id="progC"></div></div>
-<div id="view-garmin" class="view page-pb"><div id="garminC"></div></div>
+<div id="view-zones"  class="view page-pb"><div id="zonesC"></div></div>
 
 <div class="bnav">
   <button class="bni active" onclick="sv('today',this)"><div class="bni-icon">📅</div><div class="bni-lbl">Aujourd'hui</div></button>
   <button class="bni" onclick="sv('week',this)"><div class="bni-icon">📆</div><div class="bni-lbl">Semaine</div></button>
   <button class="bni" onclick="sv('prog',this)"><div class="bni-icon">📋</div><div class="bni-lbl">Programme</div></button>
-  <button class="bni" onclick="sv('garmin',this)"><div class="bni-icon">⌚</div><div class="bni-lbl">Garmin</div></button>
+  <button class="bni" onclick="sv('zones',this)"><div class="bni-icon">⚡</div><div class="bni-lbl">Zones</div></button>
 </div>
 
 <script>
@@ -213,19 +162,8 @@ const SICON = {Z:'🖥️',S:'🏊',R:'🏃',BZ:'🖥️🏃',X:'😴',RACE:'�
 const SNAME = {Z:'Zwift',S:'Natation',R:'Course',BZ:'Brick',X:'Repos',RACE:'Course !'};
 const SCOL  = {Z:'zwift',S:'swim',R:'run',BZ:'brick',X:'rest',RACE:'race'};
 
-// ── Storage ──────────────────────────────────────────────────
-const LS = {
-  get(k,def=null){ try{const v=localStorage.getItem(k); return v?JSON.parse(v):def}catch{return def}},
-  set(k,v){ try{localStorage.setItem(k,JSON.stringify(v))}catch{}},
-};
-
-// ── State ────────────────────────────────────────────────────
 let wkIdx = 0;
-let garminCfg = LS.get('garmin_cfg', {url:'', email:'', password:'', connected:false});
-let garminData = LS.get('garmin_data', null);
-let garminTab = 'connect';
 
-// ── Utils ────────────────────────────────────────────────────
 function toD(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
 function tds(){const t=new Date();return`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`}
 function diff(s){const t=new Date();t.setHours(0,0,0,0);const d=toD(s);d.setHours(0,0,0,0);return Math.round((d-t)/864e5)}
@@ -239,14 +177,10 @@ function findWkIdx(ds){
   return 0;
 }
 
-// ── Session card ─────────────────────────────────────────────
-function sc(sess, idx, garminMatch=null){
+function sc(sess, idx){
   const dur = sess.duration>0?`${sess.duration}min`:'';
   const lvl = sess.level!=='-'&&sess.level!=='Mod'?sess.level:'';
   const hasDet = sess.detail&&sess.detail.length>0;
-  const matchBadge = garminMatch
-    ? `<div class="match-badge ${garminMatch.ok?'match-ok':'match-miss'}">${garminMatch.label}</div>`
-    : '';
   return`<div class="sc sport-${sess.sport} ai" style="animation-delay:${idx*50}ms">
     <div class="sc-hd">
       <div class="sbadge">${SICON[sess.sport]||'🏃'}</div>
@@ -257,61 +191,25 @@ function sc(sess, idx, garminMatch=null){
       <div class="sright">
         ${dur?`<div class="sdur">${dur}</div>`:''}
         ${lvl?`<div class="slvl lvl-${sess.level}">${lvl}</div>`:''}
-        ${matchBadge}
       </div>
     </div>
-    ${hasDet?`<div class="dtoggle" onclick="td(this)"><span>▸</span> <span>Détails & exercices</span></div>
+    ${hasDet?`<div class="dtoggle" onclick="td(this)"><span>▸</span> Détails & exercices</div>
     <div class="dbody"><div class="dtext">${sess.detail.replace(/\|/g,'<br>• ').replace(/^/,'• ')}</div></div>`:''}</div>`
 }
 function td(el){const b=el.nextElementSibling;b.classList.toggle('open');el.querySelector('span').textContent=b.classList.contains('open')?'▾':'▸'}
 
-// ── TODAY ────────────────────────────────────────────────────
 function renderToday(){
   const ts=tds(),found=findDay(ts),c=document.getElementById('todayC');
   document.getElementById('todayBadge').textContent=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
-  if(!found){c.innerHTML=`<div class="empty"><div class="ei">🏁</div><h3>Programme terminé !</h3><p>Tes deux triathlons sont derrière toi.</p></div>`;return}
+  if(!found){c.innerHTML=`<div class="empty"><div class="ei">🏁</div><h3>Programme terminé !</h3><p>Tes deux triathlons sont derrière toi. Bravo !</p></div>`;return}
   const{week:w,day:d}=found;
-  const matches = garminData ? buildMatches(d, garminData.activities||[]) : {};
   let h=`<div class="today-dt">${fmtL(d.date)}</div>
     <div class="today-hl">${d.dayFull}</div>
     <div class="today-wk" style="color:${w.phaseColor}">S${w.week} · ${w.phaseName}</div>`;
-  d.sessions.forEach((s,i)=>h+=sc(s,i,matches[i]));
-  // Garmin widget if connected
-  if(garminCfg.connected && garminData){
-    h += renderTodayGarminWidget();
-  }
+  d.sessions.forEach((s,i)=>h+=sc(s,i));
   c.innerHTML=h;
 }
 
-function buildMatches(day, activities){
-  const matches={};
-  day.sessions.forEach((sess,i)=>{
-    if(sess.sport==='X'||sess.sport==='RACE')return;
-    const act = activities.find(a=>a.date===day.date && a.sport===sess.sport);
-    if(act){
-      const planDur = sess.duration;
-      const realDur = act.duration;
-      const diff = Math.abs(planDur-realDur);
-      matches[i] = {ok: diff<=15, label: act.duration+'min réalisé', act};
-    }
-  });
-  return matches;
-}
-
-function renderTodayGarminWidget(){
-  if(!garminData||!garminData.stats)return'';
-  const s=garminData.stats;
-  return`<div style="height:12px"></div>
-  <div class="section-title">Données Garmin · Semaine en cours</div>
-  <div class="sgrid">
-    <div class="scard"><div class="slabel">Zwift</div><div class="sval" style="color:var(--zwift)">${s.weekly?.zwift||'—'}<span class="sunit">min</span></div></div>
-    <div class="scard"><div class="slabel">Course</div><div class="sval" style="color:var(--run)">${s.weekly?.run||'—'}<span class="sunit">min</span></div></div>
-    <div class="scard"><div class="slabel">Puissance moy.</div><div class="sval" style="color:var(--zwift)">${s.avgPower||'—'}<span class="sunit">W</span></div><div class="strend">FTP cible : 213W</div></div>
-    <div class="scard"><div class="slabel">Allure moy.</div><div class="sval" style="color:var(--run)">${s.avgPaceFmt||'—'}<span class="sunit">/km</span></div><div class="strend">Cible : 4:28/km</div></div>
-  </div>`;
-}
-
-// ── WEEK ─────────────────────────────────────────────────────
 function renderWeek(){
   const w=PROGRAM[wkIdx],ts=tds();
   const end=w.days[6]?w.days[6].date:w.days[w.days.length-1].date;
@@ -333,7 +231,6 @@ function renderWeek(){
 }
 function chWk(d){wkIdx=Math.max(0,Math.min(PROGRAM.length-1,wkIdx+d));renderWeek();document.getElementById('view-week').scrollTop=0}
 
-// ── PROG ─────────────────────────────────────────────────────
 function renderProg(){
   let phases={};
   PROGRAM.forEach(w=>{if(!phases[w.phase])phases[w.phase]={name:w.phaseName,color:w.phaseColor,weeks:[]};phases[w.phase].weeks.push(w)});
@@ -358,220 +255,59 @@ function renderProg(){
 }
 function jumpWk(i){wkIdx=i;sv('week',document.querySelectorAll('.bni')[1]);renderWeek()}
 
-// ── GARMIN ───────────────────────────────────────────────────
-function renderGarmin(){
-  const connected = garminCfg.connected;
-  document.getElementById('garminC').innerHTML = `
-    <div class="tab-row">
-      <button class="tab-btn ${garminTab==='connect'?'active':''}" onclick="setGTab('connect')">⚙️ Config</button>
-      <button class="tab-btn ${garminTab==='stats'?'active':''}" onclick="setGTab('stats')">📊 Stats</button>
-      <button class="tab-btn ${garminTab==='activities'?'active':''}" onclick="setGTab('activities')">🏃 Activités</button>
-      <button class="tab-btn ${garminTab==='setup'?'active':''}" onclick="setGTab('setup')">📖 Guide</button>
-    </div>
-    <div id="gTabContent"></div>`;
-  renderGTab();
-}
-
-function setGTab(t){garminTab=t;renderGarmin()}
-
-function renderGTab(){
-  const c=document.getElementById('gTabContent');
-  if(garminTab==='connect') c.innerHTML=renderConnectTab();
-  else if(garminTab==='stats') c.innerHTML=renderStatsTab();
-  else if(garminTab==='activities') c.innerHTML=renderActivitiesTab();
-  else c.innerHTML=renderGuideTab();
-}
-
-function renderConnectTab(){
-  const ok=garminCfg.connected;
-  return`
-  <div class="gcard">
-    <div class="status-bar ${ok?'status-ok':'status-warn'}">${ok?'✅ Connecté à Garmin Connect — '+garminCfg.name:'⚠️ Non connecté'}</div>
-    <h3>Configuration</h3>
-    <p>Entre l'URL de ton backend Vercel et tes identifiants Garmin Connect. Tes données sont stockées uniquement sur ton téléphone.</p>
-
-    <div class="form-group">
-      <label class="form-label">URL du backend Vercel</label>
-      <input class="form-input" id="gUrl" type="url" placeholder="https://ton-app.vercel.app" value="${garminCfg.url||''}">
-      <div class="url-hint">Obtenue après déploiement sur Vercel — voir onglet Guide</div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Email Garmin Connect</label>
-      <input class="form-input" id="gEmail" type="email" placeholder="ton@email.com" value="${garminCfg.email||''}">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Mot de passe Garmin Connect</label>
-      <input class="form-input" id="gPwd" type="password" placeholder="••••••••" value="${garminCfg.password||''}">
-    </div>
-    <button class="btn btn-green" onclick="testGarmin()" id="gConnBtn">
-      <span id="gBtnTxt">🔗 Tester la connexion</span>
-    </button>
+function renderZones(){
+  document.getElementById('zonesC').innerHTML=`
+  <div class="section-title">🚴 Zones de puissance — FTP 213W</div>
+  <div class="zones-grid">
+    <div class="zone-card"><div class="zone-name" style="color:var(--muted)">Z1 · Récupération</div>
+      <div class="zone-row"><span class="zone-label">Watts</span><span class="zone-val">&lt; 128W</span></div>
+      <div class="zone-row"><span class="zone-label">% FTP</span><span class="zone-val">&lt; 60%</span></div></div>
+    <div class="zone-card"><div class="zone-name" style="color:var(--swim)">Z2 · Endurance</div>
+      <div class="zone-row"><span class="zone-label">Watts</span><span class="zone-val">128–170W</span></div>
+      <div class="zone-row"><span class="zone-label">% FTP</span><span class="zone-val">60–80%</span></div></div>
+    <div class="zone-card"><div class="zone-name" style="color:var(--zwift)">Z3 · Tempo</div>
+      <div class="zone-row"><span class="zone-label">Watts</span><span class="zone-val">170–192W</span></div>
+      <div class="zone-row"><span class="zone-label">% FTP</span><span class="zone-val">80–90%</span></div></div>
+    <div class="zone-card"><div class="zone-name" style="color:var(--brick)">Z4 · Sweetspot</div>
+      <div class="zone-row"><span class="zone-label">Watts</span><span class="zone-val">192–213W</span></div>
+      <div class="zone-row"><span class="zone-label">% FTP</span><span class="zone-val">90–100%</span></div></div>
+    <div class="zone-card"><div class="zone-name" style="color:var(--run)">Z5 · FTP</div>
+      <div class="zone-row"><span class="zone-label">Watts</span><span class="zone-val">213–230W</span></div>
+      <div class="zone-row"><span class="zone-label">% FTP</span><span class="zone-val">100–108%</span></div></div>
+    <div class="zone-card"><div class="zone-name" style="color:var(--race)">Z6 · VO2max</div>
+      <div class="zone-row"><span class="zone-label">Watts</span><span class="zone-val">230–256W</span></div>
+      <div class="zone-row"><span class="zone-label">% FTP</span><span class="zone-val">108–120%</span></div></div>
   </div>
-  <div id="gConnResult"></div>
-  ${ok?`<button class="btn btn-outline" style="margin-top:8px" onclick="syncGarmin()"><span id="syncTxt">🔄 Synchroniser les données</span></button>`:''}`;
-}
 
-function renderStatsTab(){
-  if(!garminCfg.connected){
-    return`<div class="empty"><div class="ei">⌚</div><h3>Non connecté</h3><p>Configure ta connexion Garmin dans l'onglet Config.</p></div>`;
-  }
-  if(!garminData||!garminData.stats){
-    return`<div class="gcard"><p>Aucune donnée synchronisée.</p><button class="btn btn-green" onclick="syncGarmin()">🔄 Synchroniser</button></div>`;
-  }
-  const s=garminData.stats;
-  const ts = garminData.syncTime ? new Date(garminData.syncTime).toLocaleString('fr-FR') : '?';
-  return`
-  <div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-family:var(--mono)">Dernière synchro : ${ts}</div>
-  <div class="section-title">Semaine en cours</div>
-  <div class="sgrid">
-    <div class="scard"><div class="slabel">Zwift total</div><div class="sval" style="color:var(--zwift)">${s.weekly?.zwift||'—'}<span class="sunit">min</span></div></div>
-    <div class="scard"><div class="slabel">Course totale</div><div class="sval" style="color:var(--run)">${s.weekly?.run||'—'}<span class="sunit">min</span></div></div>
-    <div class="scard"><div class="slabel">Natation</div><div class="sval" style="color:var(--swim)">${s.weekly?.swim||'—'}<span class="sunit">min</span></div></div>
-    <div class="scard"><div class="slabel">Volume total</div><div class="sval">${s.weekly?.total||'—'}<span class="sunit">min</span></div></div>
+  <div class="section-title">🏃 Allures course à pied</div>
+  <div class="zones-grid">
+    <div class="zone-card"><div class="zone-name" style="color:var(--muted)">Z1 · Récupération</div>
+      <div class="zone-row"><span class="zone-label">Allure</span><span class="zone-val">&gt; 5:40/km</span></div></div>
+    <div class="zone-card"><div class="zone-name" style="color:var(--swim)">Z2 · Endurance</div>
+      <div class="zone-row"><span class="zone-label">Allure</span><span class="zone-val">5:00–5:30</span></div></div>
+    <div class="zone-card"><div class="zone-name" style="color:var(--zwift)">Z3 · Tempo</div>
+      <div class="zone-row"><span class="zone-label">Allure</span><span class="zone-val">4:40–5:00</span></div></div>
+    <div class="zone-card"><div class="zone-name" style="color:var(--brick)">Z4 · Seuil</div>
+      <div class="zone-row"><span class="zone-label">Allure</span><span class="zone-val">4:20–4:40</span></div></div>
+    <div class="zone-card"><div class="zone-name" style="color:var(--zwift)">Brick Tri M</div>
+      <div class="zone-row"><span class="zone-label">Cible</span><span class="zone-val">4:35–4:45</span></div></div>
+    <div class="zone-card"><div class="zone-name" style="color:var(--run)">Marathon Tri L</div>
+      <div class="zone-row"><span class="zone-label">Cible</span><span class="zone-val">5:00–5:10</span></div></div>
   </div>
-  <div class="section-title">Moyennes récentes (30j)</div>
-  <div class="sgrid">
-    <div class="scard"><div class="slabel">Puissance Zwift</div><div class="sval" style="color:var(--zwift)">${s.avgPower||'—'}<span class="sunit">W</span></div><div class="strend">FTP cible : 213W${s.avgPower&&s.avgPower>=213?' 🔥':''}</div></div>
-    <div class="scard"><div class="slabel">Allure course</div><div class="sval" style="color:var(--run)">${s.avgPaceFmt||'—'}<span class="sunit">/km</span></div><div class="strend">Cible : 4:28/km</div></div>
-    <div class="scard"><div class="slabel">Allure nage</div><div class="sval" style="color:var(--swim)">${s.avgSwimFmt||'—'}<span class="sunit">/100m</span></div><div class="strend">Cible : 2:08/100m</div></div>
-    <div class="scard"><div class="slabel">Progression FTP</div><div class="sval" style="color:var(--zwift)">${s.avgPower?Math.round((s.avgPower/213)*100)+'%':'—'}</div><div class="strend">de l'objectif</div></div>
-  </div>
-  <button class="btn btn-outline" onclick="syncGarmin()"><span id="syncTxt2">🔄 Actualiser</span></button>`;
+
+  <div class="section-title">🏊 Natation</div>
+  <div class="zones-grid">
+    <div class="zone-card"><div class="zone-name" style="color:var(--muted)">Récupération</div>
+      <div class="zone-row"><span class="zone-label">Allure</span><span class="zone-val">&gt; 2:30</span></div></div>
+    <div class="zone-card"><div class="zone-name" style="color:var(--swim)">Z2 · Endurance</div>
+      <div class="zone-row"><span class="zone-label">Allure</span><span class="zone-val">2:15–2:25</span></div></div>
+    <div class="zone-card"><div class="zone-name" style="color:var(--zwift)">Z3 · Tempo</div>
+      <div class="zone-row"><span class="zone-label">Allure</span><span class="zone-val">2:08–2:15</span></div></div>
+    <div class="zone-card"><div class="zone-name" style="color:var(--race)">Z4 · Race-pace</div>
+      <div class="zone-row"><span class="zone-label">Allure</span><span class="zone-val">2:05–2:10</span></div></div>
+  </div>`;
 }
 
-function renderActivitiesTab(){
-  if(!garminCfg.connected){
-    return`<div class="empty"><div class="ei">⌚</div><h3>Non connecté</h3><p>Configure ta connexion Garmin dans l'onglet Config.</p></div>`;
-  }
-  if(!garminData||!garminData.activities||garminData.activities.length===0){
-    return`<div class="gcard"><p>Aucune activité synchronisée.</p><button class="btn btn-green" onclick="syncGarmin()">🔄 Synchroniser</button></div>`;
-  }
-  const acts = garminData.activities.slice(0,20);
-  let h=`<div style="font-size:11px;color:var(--muted);margin-bottom:12px">${acts.length} dernières activités</div>`;
-  acts.forEach(a=>{
-    const ic = SICON[a.sport]||'🏃';
-    const col = `var(--${SCOL[a.sport]||'rest'})`;
-    const stats = [
-      a.duration?`<span>${a.duration}min</span>`:'',
-      a.distance&&a.distance>0?`<span>${a.distance}km</span>`:'',
-      a.avgPower?`<span style="color:var(--zwift)">${a.avgPower}W</span>`:'',
-      a.avgPace?`<span style="color:var(--run)">${a.avgPace}/km</span>`:'',
-      a.swimPace?`<span style="color:var(--swim)">${a.swimPace}/100m</span>`:'',
-      a.avgHR?`<span>♥ ${a.avgHR}bpm</span>`:'',
-    ].filter(Boolean);
-    h+=`<div class="act-item">
-      <div class="act-icon" style="background:${col}22">${ic}</div>
-      <div class="act-body">
-        <div class="act-name">${a.name}</div>
-        <div class="act-date">${a.date}</div>
-        <div class="act-stats">${stats.map(s=>`<div class="act-stat">${s}</div>`).join('')}</div>
-      </div>
-    </div>`;
-  });
-  return h;
-}
-
-function renderGuideTab(){
-  return`
-  <div class="gcard">
-    <h3>📖 Déployer le backend Garmin sur Vercel</h3>
-    <p>Ce guide t'explique comment mettre en ligne le serveur qui connecte l'app à Garmin. C'est une procédure unique d'environ 10 minutes, sans ligne de commande.</p>
-  </div>
-  <ul class="step-list">
-    <li class="step-item"><div class="step-n">1</div><div class="step-body">
-      <div class="step-t">Crée un compte GitHub (gratuit)</div>
-      <div class="step-d">Va sur <strong>github.com</strong>, crée un compte gratuit si tu n'en as pas.</div>
-      <a class="step-code" href="https://github.com/signup" target="_blank">→ github.com/signup</a>
-    </div></li>
-    <li class="step-item"><div class="step-n">2</div><div class="step-body">
-      <div class="step-t">Crée un nouveau dépôt GitHub</div>
-      <div class="step-d">Clique sur le <strong>+</strong> en haut à droite → "New repository" → nomme-le <strong>tritrain-backend</strong> → Public → Create.</div>
-    </div></li>
-    <li class="step-item"><div class="step-n">3</div><div class="step-body">
-      <div class="step-t">Uploade les fichiers du backend</div>
-      <div class="step-d">Télécharge les 3 fichiers fournis (<strong>api/garmin.py</strong>, <strong>requirements.txt</strong>, <strong>vercel.json</strong>) et glisse-les dans GitHub via "uploading an existing file".</div>
-    </div></li>
-    <li class="step-item"><div class="step-n">4</div><div class="step-body">
-      <div class="step-t">Crée un compte Vercel et importe le dépôt</div>
-      <div class="step-d">Va sur <strong>vercel.com</strong>, connecte-toi avec GitHub, clique "Add New Project", sélectionne <strong>tritrain-backend</strong>, puis "Deploy".</div>
-      <a class="step-code" href="https://vercel.com/new" target="_blank">→ vercel.com/new</a>
-    </div></li>
-    <li class="step-item"><div class="step-n">5</div><div class="step-body">
-      <div class="step-t">Copie l'URL Vercel dans l'app</div>
-      <div class="step-d">Après déploiement, Vercel t'affiche une URL comme <strong>tritrain-backend.vercel.app</strong>. Copie-la dans l'onglet Config ci-dessus.</div>
-    </div></li>
-    <li class="step-item"><div class="step-n">6</div><div class="step-body">
-      <div class="step-t">Entre tes identifiants Garmin et teste</div>
-      <div class="step-d">Dans l'onglet Config, entre l'URL + ton email Garmin + ton mot de passe Garmin Connect, puis clique "Tester la connexion".</div>
-    </div></li>
-  </ul>`;
-}
-
-// ── Garmin API calls ─────────────────────────────────────────
-async function testGarmin(){
-  const url   = document.getElementById('gUrl').value.trim().replace(/\/$/,'');
-  const email = document.getElementById('gEmail').value.trim();
-  const pwd   = document.getElementById('gPwd').value.trim();
-  if(!url||!email||!pwd){
-    document.getElementById('gConnResult').innerHTML=`<div class="status-bar status-err">⚠️ Remplis tous les champs</div>`;
-    return;
-  }
-  const btn=document.getElementById('gConnBtn');
-  btn.disabled=true;
-  document.getElementById('gBtnTxt').innerHTML=`<span class="loader"></span> Connexion en cours...`;
-  document.getElementById('gConnResult').innerHTML='';
-  try{
-    const r = await fetch(`${url}/api/garmin/auth`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email,password:pwd})
-    });
-    const d = await r.json();
-    if(d.success){
-      garminCfg = {url, email, password:pwd, connected:true, name:d.name};
-      LS.set('garmin_cfg', garminCfg);
-      document.getElementById('gConnResult').innerHTML=
-        `<div class="status-bar status-ok">✅ Connecté ! Bienvenue ${d.name}</div>`;
-      setTimeout(()=>{renderGarmin();syncGarmin()},1000);
-    } else {
-      document.getElementById('gConnResult').innerHTML=
-        `<div class="status-bar status-err">❌ ${d.error||'Connexion échouée'}</div>`;
-    }
-  }catch(e){
-    document.getElementById('gConnResult').innerHTML=
-      `<div class="status-bar status-err">❌ Impossible de joindre le backend : ${e.message}</div>`;
-  }finally{
-    btn.disabled=false;
-    document.getElementById('gBtnTxt').textContent='🔗 Tester la connexion';
-  }
-}
-
-async function syncGarmin(){
-  const{url,email,password}=garminCfg;
-  if(!url||!email||!password)return;
-  const stxt=document.getElementById('syncTxt')||document.getElementById('syncTxt2');
-  if(stxt){stxt.innerHTML=`<span class="loader"></span> Synchronisation...`;}
-  try{
-    const[rActs,rStats]=await Promise.all([
-      fetch(`${url}/api/garmin/activities?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&days=14`),
-      fetch(`${url}/api/garmin/stats?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`),
-    ]);
-    const[dActs,dStats]=await Promise.all([rActs.json(),rStats.json()]);
-    garminData = {
-      activities: dActs.activities||[],
-      stats: dStats,
-      syncTime: Date.now()
-    };
-    LS.set('garmin_data', garminData);
-    renderGarmin();
-    renderToday(); // refresh today with new data
-  }catch(e){
-    console.error('Sync error',e);
-    if(stxt){stxt.textContent='🔄 Réessayer';}
-  }
-}
-
-// ── Nav ──────────────────────────────────────────────────────
 function sv(name,el){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.bni').forEach(b=>b.classList.remove('active'));
@@ -579,17 +315,14 @@ function sv(name,el){
   el.classList.add('active');
 }
 
-// ── Init ─────────────────────────────────────────────────────
 function init(){
-  // Countdowns
   const dM=diff('2026-05-15'),dL=diff('2026-07-05');
   document.getElementById('dM').textContent=dM>0?`J-${dM}`:dM===0?'AUJOURD\'HUI':'Terminé';
   document.getElementById('dL').textContent=dL>0?`J-${dL}`:dL===0?'AUJOURD\'HUI':'Terminé';
-  // Current week
   wkIdx=findWkIdx(tds());
   const cw=PROGRAM[wkIdx];
   if(cw){document.getElementById('cwn').textContent=`S${cw.week}/18`;document.getElementById('cpn').textContent=`Phase ${cw.phase}`}
-  renderToday();renderWeek();renderProg();renderGarmin();
+  renderToday();renderWeek();renderProg();renderZones();
 }
 init();
 </script>
