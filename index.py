@@ -16,3 +16,10 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
         self.wfile.write(json.dumps({"status": "ok"}).encode())
+```
+
+5. Commit
+
+Puis teste dans le navigateur :
+```
+https://tritrain-backend-17ro.vercel.app/api/index.py
