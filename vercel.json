@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/api/garmin/(.*)", "dest": "/api/garmin.py" },
+    { "src": "/(.*)", "dest": "/api/garmin.py" }
+  ],
+  "functions": {
+    "api/garmin.py": {
+      "maxDuration": 30
+    }
+  }
+}
