@@ -1,1 +1,6 @@
-{}
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/", "destination": "/tritrain_app.html" }
+  ]
+}
