@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/garmin.py", "use": "@vercel/python" }
+  ],
+  "routes": [
+    { "src": "/api/garmin/(.*)", "dest": "/api/garmin.py" },
+    { "src": "/(.*)", "dest": "/api/garmin.py" }
+  ],
+  "env": {},
+  "functions": {
+    "api/garmin.py": {
+      "maxDuration": 30
+    }
+  }
+}
