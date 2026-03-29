@@ -1,7 +1,0 @@
-{
-  "name": "tritrain-backend",
-  "version": "1.0.0",
-  "dependencies": {
-    "garmin-connect": "1.7.1"
-  }
-}
